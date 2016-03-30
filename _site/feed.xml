@@ -6,9 +6,470 @@
 </description>
     <link>http://nik.cloud/</link>
     <atom:link href="http://nik.cloud/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 26 Mar 2016 18:05:50 +0100</pubDate>
-    <lastBuildDate>Sat, 26 Mar 2016 18:05:50 +0100</lastBuildDate>
-    <generator>Jekyll v3.0.3</generator>
+    <pubDate>Wed, 30 Mar 2016 10:25:59 +0200</pubDate>
+    <lastBuildDate>Wed, 30 Mar 2016 10:25:59 +0200</lastBuildDate>
+    <generator>Jekyll v3.1.2</generator>
+    
+      <item>
+        <title>Easy UrbanCode Deploy with Vagrant</title>
+        <description>&lt;p&gt;This article describes my process of automatically creating deployment targets for an IBM UrbanCode Deploy environment.&lt;/p&gt;
+
+&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
+&lt;p&gt;Vagrant must be &lt;a href=&quot;https://www.vagrantup.com/docs/getting-started/index.html&quot;&gt;installed on your local machine&lt;/a&gt;. 
+It can be downloaded and installed from &lt;a href=&quot;https://docs.vagrantup.com/v2/getting-started/index.html&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;building-the-bases&quot;&gt;Building the bases&lt;/h2&gt;
+
+&lt;p&gt;In order to optimise performance, in this first article we will first build a base box image containing some basic stuff:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The IBM UrbanCode Deploy Agent installation files&lt;/li&gt;
+  &lt;li&gt;Java JRE&lt;/li&gt;
+  &lt;li&gt;Docker engine&lt;/li&gt;
+  &lt;li&gt;Docker compose&lt;/li&gt;
+  &lt;li&gt;NodeJS&lt;/li&gt;
+  &lt;li&gt;NPM&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;create-the-vagrant-file&quot;&gt;Create the Vagrant File&lt;/h3&gt;
+
+&lt;p&gt;First we start with the “config” section in which we define that the base image is based on Ubuntu 14.04.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Vagrant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+ 
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;box&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;ubuntu/trusty64&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;For this article I chose to create an inline shell script in order to make it a simple on-file solution to start with.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt; &lt;span class=&quot;c&quot;&gt;# Provision the Base image&lt;/span&gt;
+  config.vm.provision &lt;span class=&quot;s2&quot;&gt;&quot;shell&quot;&lt;/span&gt;, inline: &lt;span class=&quot;sh&quot;&gt;&amp;lt;&amp;lt;-SHELL&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;So first we update the package manager and install the unzip binary.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;    &lt;span class=&quot;c&quot;&gt;#UPDATE    &lt;/span&gt;
+    sudo apt-get update
+    &lt;span class=&quot;c&quot;&gt;#GET UNZIP&lt;/span&gt;
+    sudo apt-get install unzip&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Next we install the Java JRE needed to run the UrbanCode Deploy Agent&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;  &lt;span class=&quot;c&quot;&gt;#INSTALL JAVA&lt;/span&gt;
+    sudo apt-get install --fix-missing -y
+    sudo apt-get install openjdk-6-jre-headless -y&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h4 id=&quot;optional-steps&quot;&gt;Optional Steps&lt;/h4&gt;
+
+&lt;p&gt;For my specific example, I need install the following additional elements:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Docker engine&lt;/li&gt;
+  &lt;li&gt;Docker compose&lt;/li&gt;
+  &lt;li&gt;NodeJS&lt;/li&gt;
+  &lt;li&gt;NPM&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Install the Docker Engine&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;   &lt;span class=&quot;c&quot;&gt;#INSTALL DOCKER&lt;/span&gt;
+    sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    sudo &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;deb https://apt.dockerproject.org/repo ubuntu-trusty main&#39;&lt;/span&gt; &amp;gt; /etc/apt/sources.list.d/docker.list
+    sudo apt-get update
+    sudo apt-get install docker-engine -y
+    sudo service docker stop
+    sudo service docker start
+    sudo usermod -aG docker vagrant&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Isntall Docker Compose&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;     &lt;span class=&quot;c&quot;&gt;#INSTALL DOCKER COMPOSE&lt;/span&gt;
+    curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-compose-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -s&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -m&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; &amp;gt; docker-compose
+    sudo mv docker-compose /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Install NodeJS and NPM&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;   &lt;span class=&quot;c&quot;&gt;#INSTALL NODE/NPM&lt;/span&gt;
+    sudo apt-get install nodejs -y
+    sudo apt-get install npm -y&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And I pull some Docker images to speed up deployment&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;  &lt;span class=&quot;c&quot;&gt;#PULL DOCKER IMAGES&lt;/span&gt;
+    docker pull node
+    docker pull dockerui/dockerui
+    docker pull tutum/haproxyXXX&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Create a directory for the project and copy the above code into a file called Vagrant finally run the vagrant boxScreen Shot 2016-01-19 at 10.05.31&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;mkdir my_ucd_agent_base
+nano Vagrant
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;my_ucd_agent_base
+mkdir vagrant_data
+vagrant up&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;When done, we’ll create a box image of the base&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;vagrant package --output base_agent.box
+&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ..
+mkdir my_ucd_agent
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;my_ucd_agent
+cp ../my_ucd_agent_base/base_agent.box .
+Building the IBM UrbanCode Deploy Agent Box&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;sdfadfs&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# -*- mode: ruby -*-&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# vi: set ft=ruby :&lt;/span&gt;
+
+
+&lt;span class=&quot;no&quot;&gt;Vagrant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# Use the base box for speed&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;box&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;../1_BASE_BOX/package.box&quot;&lt;/span&gt;
+   
+    &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;provider&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;virtualbox&quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;# Customize the amount of memory on the VM:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;memory&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;512&quot;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;each&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;    
+        &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;agent&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;agent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;# Create a private network, which allows host-only access to the machine using a specific IP.&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;agent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;network&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;private_network&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;ip: &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;192.168.231.4&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;#Creates agents in the 192.168.231.4x subnet&lt;/span&gt;
+            
+            &lt;span class=&quot;c1&quot;&gt;# Share the agent installation file with the VM&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;agent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;synced_folder&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;./ucd_config&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/ucd_config&quot;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;agent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;provision&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:shell&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:path&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;./ucd_config/install.sh&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&#39;&quot;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+</description>
+        <pubDate>Wed, 30 Mar 2016 08:45:12 +0200</pubDate>
+        <link>http://nik.cloud/urbancode/vagrant/2016/03/30/welcome-to-jekyll-3.html</link>
+        <guid isPermaLink="true">http://nik.cloud/urbancode/vagrant/2016/03/30/welcome-to-jekyll-3.html</guid>
+        
+        
+        <category>urbancode</category>
+        
+        <category>vagrant</category>
+        
+      </item>
+    
+      <item>
+        <title>Easy UrbanCode Deploy with Vagrant (part 2)</title>
+        <description>&lt;p&gt;This article describes my process of automatically creating deployment targets for an IBM UrbanCode Deploy environment.&lt;/p&gt;
+
+&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
+&lt;p&gt;Vagrant must be &lt;a href=&quot;https://www.vagrantup.com/docs/getting-started/index.html&quot;&gt;installed on your local machine&lt;/a&gt;. 
+It can be downloaded and installed from &lt;a href=&quot;https://docs.vagrantup.com/v2/getting-started/index.html&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;building-the-bases&quot;&gt;Building the bases&lt;/h2&gt;
+
+&lt;p&gt;In order to optimise performance, in this first article we will first build a base box image containing some basic stuff:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The IBM UrbanCode Deploy Agent installation files&lt;/li&gt;
+  &lt;li&gt;Java JRE&lt;/li&gt;
+  &lt;li&gt;Docker engine&lt;/li&gt;
+  &lt;li&gt;Docker compose&lt;/li&gt;
+  &lt;li&gt;NodeJS&lt;/li&gt;
+  &lt;li&gt;NPM&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;create-the-vagrant-file&quot;&gt;Create the Vagrant File&lt;/h3&gt;
+
+&lt;p&gt;First we start with the “config” section in which we define that the base image is based on Ubuntu 14.04.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Vagrant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+ 
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;box&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;ubuntu/trusty64&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;For this article I chose to create an inline shell script in order to make it a simple on-file solution to start with.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt; &lt;span class=&quot;c&quot;&gt;# Provision the Base image&lt;/span&gt;
+  config.vm.provision &lt;span class=&quot;s2&quot;&gt;&quot;shell&quot;&lt;/span&gt;, inline: &lt;span class=&quot;sh&quot;&gt;&amp;lt;&amp;lt;-SHELL&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;So first we update the package manager and install the unzip binary.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;    &lt;span class=&quot;c&quot;&gt;#UPDATE    &lt;/span&gt;
+    sudo apt-get update
+    &lt;span class=&quot;c&quot;&gt;#GET UNZIP&lt;/span&gt;
+    sudo apt-get install unzip&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Next we install the Java JRE needed to run the UrbanCode Deploy Agent&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;  &lt;span class=&quot;c&quot;&gt;#INSTALL JAVA&lt;/span&gt;
+    sudo apt-get install --fix-missing -y
+    sudo apt-get install openjdk-6-jre-headless -y&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h4 id=&quot;optional-steps&quot;&gt;Optional Steps&lt;/h4&gt;
+
+&lt;p&gt;For my specific example, I need install the following additional elements:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Docker engine&lt;/li&gt;
+  &lt;li&gt;Docker compose&lt;/li&gt;
+  &lt;li&gt;NodeJS&lt;/li&gt;
+  &lt;li&gt;NPM&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Install the Docker Engine&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;   &lt;span class=&quot;c&quot;&gt;#INSTALL DOCKER&lt;/span&gt;
+    sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    sudo &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;deb https://apt.dockerproject.org/repo ubuntu-trusty main&#39;&lt;/span&gt; &amp;gt; /etc/apt/sources.list.d/docker.list
+    sudo apt-get update
+    sudo apt-get install docker-engine -y
+    sudo service docker stop
+    sudo service docker start
+    sudo usermod -aG docker vagrant&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Isntall Docker Compose&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;     &lt;span class=&quot;c&quot;&gt;#INSTALL DOCKER COMPOSE&lt;/span&gt;
+    curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-compose-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -s&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -m&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; &amp;gt; docker-compose
+    sudo mv docker-compose /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Install NodeJS and NPM&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;   &lt;span class=&quot;c&quot;&gt;#INSTALL NODE/NPM&lt;/span&gt;
+    sudo apt-get install nodejs -y
+    sudo apt-get install npm -y&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And I pull some Docker images to speed up deployment&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;  &lt;span class=&quot;c&quot;&gt;#PULL DOCKER IMAGES&lt;/span&gt;
+    docker pull node
+    docker pull dockerui/dockerui
+    docker pull tutum/haproxyXXX&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Create a directory for the project and copy the above code into a file called Vagrant finally run the vagrant boxScreen Shot 2016-01-19 at 10.05.31&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;mkdir my_ucd_agent_base
+nano Vagrant
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;my_ucd_agent_base
+mkdir vagrant_data
+vagrant up&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;When done, we’ll create a box image of the base&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;vagrant package --output base_agent.box
+&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ..
+mkdir my_ucd_agent
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;my_ucd_agent
+cp ../my_ucd_agent_base/base_agent.box .
+Building the IBM UrbanCode Deploy Agent Box&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;sdfadfs&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# -*- mode: ruby -*-&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# vi: set ft=ruby :&lt;/span&gt;
+
+
+&lt;span class=&quot;no&quot;&gt;Vagrant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# Use the base box for speed&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;box&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;../1_BASE_BOX/package.box&quot;&lt;/span&gt;
+   
+    &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;provider&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;virtualbox&quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;# Customize the amount of memory on the VM:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;memory&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;512&quot;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;each&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;    
+        &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;agent&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;agent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;# Create a private network, which allows host-only access to the machine using a specific IP.&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;agent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;network&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;private_network&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;ip: &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;192.168.231.4&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;#Creates agents in the 192.168.231.4x subnet&lt;/span&gt;
+            
+            &lt;span class=&quot;c1&quot;&gt;# Share the agent installation file with the VM&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;agent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;synced_folder&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;./ucd_config&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/ucd_config&quot;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;agent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;provision&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:shell&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:path&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;./ucd_config/install.sh&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&#39;&quot;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+</description>
+        <pubDate>Wed, 30 Mar 2016 08:45:12 +0200</pubDate>
+        <link>http://nik.cloud/urbancode/vagrant/2016/03/30/vagrant_ucd_part2.html</link>
+        <guid isPermaLink="true">http://nik.cloud/urbancode/vagrant/2016/03/30/vagrant_ucd_part2.html</guid>
+        
+        
+        <category>urbancode</category>
+        
+        <category>vagrant</category>
+        
+      </item>
+    
+      <item>
+        <title>Easy UrbanCode Deploy with Vagrant (part 1)</title>
+        <description>&lt;p&gt;This article describes my process of automatically creating deployment targets for an IBM UrbanCode Deploy environment.&lt;/p&gt;
+
+&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
+&lt;p&gt;Vagrant must be &lt;a href=&quot;https://www.vagrantup.com/docs/getting-started/index.html&quot;&gt;installed on your local machine&lt;/a&gt;. 
+It can be downloaded and installed from &lt;a href=&quot;https://docs.vagrantup.com/v2/getting-started/index.html&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;building-the-bases&quot;&gt;Building the bases&lt;/h2&gt;
+
+&lt;p&gt;In order to optimise performance, in this first article we will first build a base box image containing some basic stuff:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The IBM UrbanCode Deploy Agent installation files&lt;/li&gt;
+  &lt;li&gt;Java JRE&lt;/li&gt;
+  &lt;li&gt;Docker engine&lt;/li&gt;
+  &lt;li&gt;Docker compose&lt;/li&gt;
+  &lt;li&gt;NodeJS&lt;/li&gt;
+  &lt;li&gt;NPM&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;create-the-vagrant-file&quot;&gt;Create the Vagrant File&lt;/h3&gt;
+
+&lt;p&gt;First we start with the “config” section in which we define that the base image is based on Ubuntu 14.04.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;Vagrant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+ 
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;box&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;ubuntu/trusty64&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;For this article I chose to create an inline shell script in order to make it a simple on-file solution to start with.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;c&quot;&gt;# Provision the Base image&lt;/span&gt;
+  config.vm.provision &lt;span class=&quot;s2&quot;&gt;&quot;shell&quot;&lt;/span&gt;, inline: &lt;span class=&quot;sh&quot;&gt;&amp;lt;&amp;lt;-SHELL
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;So first we update the package manager and install the unzip binary.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;c&quot;&gt;#UPDATE    &lt;/span&gt;
+    sudo apt-get update
+    &lt;span class=&quot;c&quot;&gt;#GET UNZIP&lt;/span&gt;
+    sudo apt-get install unzip
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Next we install the Java JRE needed to run the UrbanCode Deploy Agent&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;c&quot;&gt;#INSTALL JAVA&lt;/span&gt;
+    sudo apt-get install --fix-missing -y
+    sudo apt-get install openjdk-6-jre-headless -y
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;optional-steps&quot;&gt;Optional Steps&lt;/h4&gt;
+
+&lt;p&gt;For my specific example, I need install the following additional elements:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Docker engine&lt;/li&gt;
+  &lt;li&gt;Docker compose&lt;/li&gt;
+  &lt;li&gt;NodeJS&lt;/li&gt;
+  &lt;li&gt;NPM&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Install the Docker Engine&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   &lt;span class=&quot;c&quot;&gt;#INSTALL DOCKER&lt;/span&gt;
+    sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    sudo &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;deb https://apt.dockerproject.org/repo ubuntu-trusty main&#39;&lt;/span&gt; &amp;gt; /etc/apt/sources.list.d/docker.list
+    sudo apt-get update
+    sudo apt-get install docker-engine -y
+    sudo service docker stop
+    sudo service docker start
+    sudo usermod -aG docker vagrant
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Install Docker Compose&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     &lt;span class=&quot;c&quot;&gt;#INSTALL DOCKER COMPOSE&lt;/span&gt;
+    curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-compose-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -s&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -m&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; &amp;gt; docker-compose
+    sudo mv docker-compose /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Install NodeJS and NPM&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   &lt;span class=&quot;c&quot;&gt;#INSTALL NODE/NPM&lt;/span&gt;
+    sudo apt-get install nodejs -y
+    sudo apt-get install npm -y
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;And I pull some Docker images to speed up deployment&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;c&quot;&gt;#PULL DOCKER IMAGES&lt;/span&gt;
+    docker pull node
+    docker pull dockerui/dockerui
+    docker pull tutum/haproxyXXX
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;create-the-the-base-box&quot;&gt;Create the the Base Box&lt;/h3&gt;
+
+&lt;p&gt;Create a directory for the project and copy the above code into a file called Vagrant finally run the vagrant boxScreen
+&lt;img src=&quot;http://nik.cloud/assets/vagrant_Base_build.jpg&quot; alt=&quot;My helpful screenshot&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mkdir my_ucd_agent_base
+nano Vagrant
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;my_ucd_agent_base
+mkdir vagrant_data
+vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;When done, we’ll create a box image of the base&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vagrant package --output base_agent.box
+cd ..
+mkdir my_ucd_agent
+cd my_ucd_agent
+cp ../my_ucd_agent_base/base_agent.box .
+Building the IBM UrbanCode Deploy Agent Box
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;sdfadfs&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+Vagrant.configure(2) do |config|
+    # Use the base box for speed
+    config.vm.box = &quot;../1_BASE_BOX/package.box&quot;
+   
+    config.vm.provider &quot;virtualbox&quot; do |vb|
+        # Customize the amount of memory on the VM:
+        vb.memory = &quot;512&quot;
+    end
+    
+    (1..3).each do |i|    
+        config.vm.define &quot;agent#{i}&quot; do |agent|
+            # Create a private network, which allows host-only access to the machine using a specific IP.
+            agent.vm.network &quot;private_network&quot;, ip: &quot;192.168.231.4#{i}&quot;    #Creates agents in the 192.168.231.4x subnet
+            
+            # Share the agent installation file with the VM
+            agent.vm.synced_folder &quot;./ucd_config&quot;, &quot;/ucd_config&quot;
+            agent.vm.provision :shell, :path =&amp;gt; &quot;./ucd_config/install.sh&quot;, :args =&amp;gt; &quot;&#39;#{i}&#39;&quot;
+        end
+    end
+end
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+</description>
+        <pubDate>Wed, 30 Mar 2016 08:45:12 +0200</pubDate>
+        <link>http://nik.cloud/urbancode/vagrant/2016/03/30/vagrant_ucd_part1.html</link>
+        <guid isPermaLink="true">http://nik.cloud/urbancode/vagrant/2016/03/30/vagrant_ucd_part1.html</guid>
+        
+        
+        <category>urbancode</category>
+        
+        <category>vagrant</category>
+        
+      </item>
     
       <item>
         <title>Welcome to Jekyll!</title>
@@ -30,6 +491,34 @@
         <pubDate>Sat, 26 Mar 2016 17:45:12 +0100</pubDate>
         <link>http://nik.cloud/jekyll/update/2016/03/26/welcome-to-jekyll.html</link>
         <guid isPermaLink="true">http://nik.cloud/jekyll/update/2016/03/26/welcome-to-jekyll.html</guid>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
+    
+      <item>
+        <title>Welcome to Jekyll!</title>
+        <description>&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+
+&lt;p&gt;To add new posts, simply add a file in the &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory that follows the convention &lt;code class=&quot;highlighter-rouge&quot;&gt;YYYY-MM-DD-name-of-post.ext&lt;/code&gt; and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
+
+&lt;p&gt;Jekyll also offers powerful support for code snippets:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;Tom&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints &#39;Hi, Tom&#39; to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Check out the &lt;a href=&quot;http://jekyllrb.com/docs/home&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://talk.jekyllrb.com/&quot;&gt;Jekyll Talk&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 26 Mar 2016 17:45:12 +0100</pubDate>
+        <link>http://nik.cloud/jekyll/update/2016/03/26/welcome-to-jekyll-2.html</link>
+        <guid isPermaLink="true">http://nik.cloud/jekyll/update/2016/03/26/welcome-to-jekyll-2.html</guid>
         
         
         <category>jekyll</category>
@@ -77,84 +566,83 @@ sudo service docker start&lt;/p&gt;
 ```&lt;/p&gt;
 
 &lt;h3 id=&quot;docker-machine&quot;&gt;Docker Machine&lt;/h3&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-cd
-curl -L https://github.com/docker/machine/releases/download/v0.6.0/docker-machine-`uname -s`-`uname -m` &amp;gt;./docker-machine
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd
+&lt;/span&gt;curl -L https://github.com/docker/machine/releases/download/v0.6.0/docker-machine-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -s&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -m&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; &amp;gt;./docker-machine
 sudo mv docker-machine /usr/local/bin/docker-machine
 chmod +x /usr/local/bin/docker-machine
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;docker-compose&quot;&gt;Docker Compose&lt;/h3&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-cd
-sudo curl -L https://github.com/docker/compose/releases/download/1.6.0/docker-compose-`uname -s`-`uname -m` &amp;gt; ./docker-compose
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd
+&lt;/span&gt;sudo curl -L https://github.com/docker/compose/releases/download/1.6.0/docker-compose-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -s&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -m&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; &amp;gt; ./docker-compose
 sudo mv docker-compose /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
-&lt;/code&gt;
-### Docker UI
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;### Docker UI
 &lt;code class=&quot;highlighter-rouge&quot;&gt;bash
 docker run -d -p 9000:9000 --name &quot;DOCKER_UI&quot; --privileged -v /var/run/docker.sock:/var/run/docker.sock dockerui/dockerui
 &lt;/code&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;docker-ucp&quot;&gt;Docker UCP&lt;/h3&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-uname -r
-&lt;/code&gt;
-Must be &amp;gt;=3.16&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;uname -r
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Must be &amp;gt;=3.16&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-sudo apt-get install linux-image-generic-lts-utopic -y
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt-get install linux-image-generic-lts-utopic -y
 sudo reboot
 docker run –rm -it -v /var/run/docker.sock:/var/run/docker.sock –name ucp dockerorca/ucp install -i
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;docker-cadvisor&quot;&gt;Docker cAdvisor&lt;/h3&gt;
 &lt;p&gt;Install cadvisor&lt;/p&gt;
 
 &lt;p&gt;https://github.com/google/cadvisor&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-sudo docker run \
-  --volume=/:/rootfs:ro \
-  --volume=/var/run:/var/run:rw \
-  --volume=/sys:/sys:ro \
-  --volume=/var/lib/docker/:/var/lib/docker:ro \
-  --publish=9001:8080 \
-  --detach=true \
-  --name=cadvisor \
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo docker run &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --volume&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/:/rootfs:ro &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --volume&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/run:/var/run:rw &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --volume&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/sys:/sys:ro &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --volume&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/lib/docker/:/var/lib/docker:ro &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --publish&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;9001:8080 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --detach&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  --name&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;cadvisor &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
   google/cadvisor:latest
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;docker-splunk&quot;&gt;Docker Splunk&lt;/h3&gt;
 &lt;p&gt;Splunk&lt;/p&gt;
 
 &lt;p&gt;https://github.com/outcoldman/docker-splunk&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-docker run --hostname splunk -p 9002:8000 -p 9997:9997 -d outcoldman/splunk:6.3.2
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run --hostname splunk -p 9002:8000 -p 9997:9997 -d outcoldman/splunk:6.3.2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;https://hub.docker.com/r/outcoldman/docker-stats-splunk-forwarder/&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-    docker run --hostname docker \
-    --name docker_stats_splunk_forwarder \
-    --volume /var/run/docker.sock:/var/run/docker.sock:ro \
-    -e &quot;SPLUNK_FORWARD_SERVER=192.168.232.71:9997&quot; \
-    -e &quot;SPLUNK_USER=root&quot; \
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    docker run --hostname docker &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    --name docker_stats_splunk_forwarder &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    --volume /var/run/docker.sock:/var/run/docker.sock:ro &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    -e &lt;span class=&quot;s2&quot;&gt;&quot;SPLUNK_FORWARD_SERVER=192.168.232.71:9997&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    -e &lt;span class=&quot;s2&quot;&gt;&quot;SPLUNK_USER=root&quot;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
     -d outcoldman/docker-stats-splunk-forwarder:latest
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;COMPOSE&lt;/p&gt;
 
-&lt;p&gt;```
-vsplunk:
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vsplunk:
   image: busybox
   volumes:
     - /opt/splunk/etc
-    - /opt/splunk/var&lt;/p&gt;
+    - /opt/splunk/var
 
-&lt;p&gt;splunk:
+splunk:
   hostname: splunk
   image: outcoldman/splunk:splunk:6.3.2
   volumes_from:
@@ -163,64 +651,65 @@ vsplunk:
     - 8000:8000
     - 9997:9997
   restart: always
-```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;docker-rancher&quot;&gt;Docker Rancher&lt;/h3&gt;
 &lt;p&gt;Rancher Server&lt;/p&gt;
 
 &lt;p&gt;http://docs.rancher.com/rancher/installing-rancher/installing-server/&lt;/p&gt;
 
-&lt;p&gt;```bash
-sudo docker run -d –name RANCHER_SERVER –restart=always -p 9003:8080 rancher/server&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo docker run -d --name RANCHER_SERVER --restart&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;always -p 9003:8080 rancher/server
 
-&lt;p&gt;```
-Rancher Host&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Rancher Host&lt;/p&gt;
 
 &lt;p&gt;http://docs.rancher.com/rancher/installing-rancher/installing-server/&lt;/p&gt;
 
-&lt;p&gt;```bash
-sudo docker run -d –restart=always -p 9003:8080 rancher/server&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo docker run -d --restart&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;always -p 9003:8080 rancher/server
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;docker-xxx&quot;&gt;Docker XXX&lt;/h3&gt;
 &lt;p&gt;XXX&lt;/p&gt;
 
 &lt;p&gt;https://github.com/google/XXX&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-TODO
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;TODO
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;sensu&quot;&gt;Sensu&lt;/h3&gt;
 &lt;p&gt;Server&lt;/p&gt;
 
 &lt;p&gt;https://hub.docker.com/r/hiroakis/docker-sensu-server/&lt;/p&gt;
 
-&lt;p&gt;```bash
-docker run -d -p 10022:22 -p 3006:3000 -p 4567:4567 -p 5671:5671 -p 15672:15672 hiroakis/docker-sensu-server&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run -d -p 10022:22 -p 3006:3000 -p 4567:4567 -p 5671:5671 -p 15672:15672 hiroakis/docker-sensu-server
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Client&lt;/p&gt;
 
 &lt;p&gt;https://sensuapp.org/docs/0.21/install-repositories&lt;/p&gt;
 
-&lt;p&gt;```bash
-wget -q http://repositories.sensuapp.org/apt/pubkey.gpg -O- | sudo apt-key add -
-echo “deb     http://repositories.sensuapp.org/apt sensu main” | sudo tee /etc/apt/sources.list.d/sensu.list
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget -q http://repositories.sensuapp.org/apt/pubkey.gpg -O- | sudo apt-key add -
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;deb     http://repositories.sensuapp.org/apt sensu main&quot;&lt;/span&gt; | sudo tee /etc/apt/sources.list.d/sensu.list
 sudo apt-get update
-sudo apt-get install sensu&lt;/p&gt;
+sudo apt-get install sensu
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;neo4j&quot;&gt;Neo4j&lt;/h3&gt;
 
 &lt;p&gt;https://hub.docker.com/_/neo4j/&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-docker run --detach --publish=7474:7474 --volume=$HOME/TEMP/neo4j/data:/data neo4j
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run --detach --publish&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;7474:7474 --volume&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/TEMP/neo4j/data:/data neo4j
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;kubernetes&quot;&gt;Kubernetes&lt;/h2&gt;
 &lt;p&gt;http://kubernetes.io/v1.1/docs/getting-started-guides/docker.html&lt;/p&gt;
@@ -254,265 +743,270 @@ docker run -d --net=host --privileged gcr.io/google_containers/hyperkube:v1.0.1 
 
 &lt;p&gt;Install the kubectl binary&lt;/p&gt;
 
-&lt;p&gt;```bash
-wget https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/kubectl
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/kubectl
 sudo mv kubectl /usr/local/bin/kubectl
-sudo chmod +x /usr/local/bin/kubectl&lt;/p&gt;
+sudo chmod +x /usr/local/bin/kubectl
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Run an application&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-kubectl -s http://localhost:8080 run nginx --image=nginx --port=80
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl -s http://localhost:8080 run nginx --image&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;nginx --port&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;80
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Test Service&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-kubectl expose rc nginx --port=80
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl expose rc nginx --port&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;80
 kubectl get svc nginx
-kubectl get svc nginx --template=
-&lt;/code&gt;&lt;/p&gt;
+kubectl get svc nginx --template&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Scale&lt;/p&gt;
 
-&lt;p&gt;```bash
-kubectl get svc nginx&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl get svc nginx
 
-&lt;p&gt;kubectl get po
-kubectl run my-nginx –image=nginx –replicas=14 –port=80
-kubectl run my-nginx –image=nginx –replicas=14 –port=80
-kubectl scale –replicas=1 rc my-nginx
-kubectl scale –replicas=30 rc my-nginx
-kubectl scale –replicas=1 rc my-nginx&lt;/p&gt;
+kubectl get po
+kubectl run my-nginx --image&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;nginx --replicas&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;14 --port&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;80
+kubectl run my-nginx --image&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;nginx --replicas&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;14 --port&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;80
+kubectl scale --replicas&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 rc my-nginx
+kubectl scale --replicas&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;30 rc my-nginx
+kubectl scale --replicas&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 rc my-nginx
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Launching a simple application&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-kubectl run my-nginx --image=nginx --replicas=2 --port=80
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl run my-nginx --image&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;nginx --replicas&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2 --port&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;80
 kubectl get po
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Exposing your application to the Internet&lt;/p&gt;
 
-&lt;p&gt;```bash
-kubectl expose rc my-nginx –port=80 –type=LoadBalancer
-kubectl get svc my-nginx&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl expose rc my-nginx --port&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;80 --type&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;LoadBalancer
+kubectl get svc my-nginx
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Killing the application&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-kubectl delete rc my-nginx
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl delete rc my-nginx
 kubectl delete svc my-nginx
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;vagrant&quot;&gt;Vagrant&lt;/h2&gt;
 &lt;p&gt;TODO&lt;/p&gt;
 
-&lt;p&gt;```bash
-vagrant up
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vagrant up
 vagrant destroy
-vagrant ssh&lt;/p&gt;
-
-&lt;p&gt;vagrant package –output ucd_base_agent
-```&lt;/p&gt;
+vagrant ssh
+  
+vagrant package --output ucd_base_agent
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;git&quot;&gt;GIT&lt;/h2&gt;
 
-&lt;p&gt;```bash
-sudo rm -r .git
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo rm -r .git
 git init
 git add .
-git commit -m “first commit”
+git commit -m &lt;span class=&quot;s2&quot;&gt;&quot;first commit&quot;&lt;/span&gt;
 git remote add origin http://hirt.cc:9005/IoT/MQTT_DEMO.git
-git push -u origin master&lt;/p&gt;
+git push -u origin master
 
-&lt;p&gt;git init
+
+git init
 git add .
 git status
-git commit -m “Initial Version”
+git commit -m &lt;span class=&quot;s2&quot;&gt;&quot;Initial Version&quot;&lt;/span&gt;
 git remote add origin https://github.com/niklaushirt/urbancode_server_docker.git
-git push -u origin master&lt;/p&gt;
+git push -u origin master
+ 
+git pull origin master
 
-&lt;p&gt;git pull origin master&lt;/p&gt;
+git clone http://...
 
-&lt;p&gt;git clone http://…&lt;/p&gt;
-
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;GIT Log History Changes&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-git log --numstat --pretty=&quot;%H&quot; --since=&quot;2016/03/21&quot; --until=&quot;2017/02/06&quot; | awk &#39;NF==3 {plus+=$1; minus+=$2} END {printf(&quot;+%d, -%d\n&quot;, plus, minus)}&#39;
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git log --numstat --pretty&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;%H&quot;&lt;/span&gt; --since&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;2016/03/21&quot;&lt;/span&gt; --until&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;2017/02/06&quot;&lt;/span&gt; | awk &lt;span class=&quot;s1&quot;&gt;&#39;NF==3 {plus+=$1; minus+=$2} END {printf(&quot;+%d, -%d\n&quot;, plus, minus)}&#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;bluemix-cloud-foundry&quot;&gt;Bluemix Cloud Foundry&lt;/h2&gt;
 
 &lt;p&gt;https://www.ng.bluemix.net/docs/cli/index.html#downloads&lt;/p&gt;
 
-&lt;p&gt;```bash
-wget https://cli.run.pivotal.io/stable?release=debian64&amp;amp;version=6.15.0&amp;amp;source=github-rel
-mv stable\?release=debian64 cf_installer.deb 
-sudo dpkg -i cf_installer.deb&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget https://cli.run.pivotal.io/stable?release&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;debian64&amp;amp;version&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;6.15.0&amp;amp;source&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;github-rel
+mv stable&lt;span class=&quot;se&quot;&gt;\?&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;release&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;debian64 cf_installer.deb 
+sudo dpkg -i cf_installer.deb 
 
-&lt;p&gt;cf add-plugin-repo bluemix-cf http://plugins.ng.bluemix.net
-cf install-plugin IBM-Containers -r bluemix-cf&lt;/p&gt;
+cf add-plugin-repo bluemix-cf http://plugins.ng.bluemix.net
+cf install-plugin IBM-Containers -r bluemix-cf
 
-&lt;p&gt;dev_mode         1.1.1     cfDevModeDesc &lt;br /&gt;
-active-deploy    0.1.76    cfActiveDeployDesc &lt;br /&gt;
-IBM-Containers   0.8.499   cfContainersDesc &lt;br /&gt;
-bluemix-admin    1.0.0     cfBluemixAdminDesc &lt;br /&gt;
-vpn              0.1.1     cfVpnDesc&lt;/p&gt;
+dev_mode         1.1.1     cfDevModeDesc   
+active-deploy    0.1.76    cfActiveDeployDesc   
+IBM-Containers   0.8.499   cfContainersDesc   
+bluemix-admin    1.0.0     cfBluemixAdminDesc   
+vpn              0.1.1     cfVpnDesc   
 
-&lt;p&gt;cf install-plugin plugin_name -r bluemix-cf&lt;/p&gt;
 
-&lt;p&gt;```&lt;/p&gt;
+cf install-plugin plugin_name -r bluemix-cf
 
-&lt;p&gt;```bash
-cf login https://api.ng.bluemix.net&lt;/p&gt;
 
-&lt;p&gt;cf api https://api.ng.bluemix.net 
-cf login -u nikh@ch.ibm.com -o nikh@ch.ibm.com -s dev&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cf login https://api.ng.bluemix.net
+
+
+cf api https://api.ng.bluemix.net 
+cf login -u nikh@ch.ibm.com -o nikh@ch.ibm.com -s dev
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;gogs-local-github&quot;&gt;GOGS local github&lt;/h2&gt;
 
 &lt;p&gt;https://github.com/gogits/gogs&lt;/p&gt;
 
-&lt;p&gt;```bash
-docker run -d –name=gogs -p 10022:22 -p 10080:3000 -v /Users/nhirt/TEMP/gogs:/data gogs/gogs&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run -d --name&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;gogs -p 10022:22 -p 10080:3000 -v /Users/nhirt/TEMP/gogs:/data gogs/gogs
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-wget -qO - https://deb.packager.io/key | sudo apt-key add -
-echo &quot;deb https://deb.packager.io/gh/pkgr/gogs trusty pkgr&quot; | sudo tee /etc/apt/sources.list.d/gogs.list
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget -qO - https://deb.packager.io/key | sudo apt-key add -
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;deb https://deb.packager.io/gh/pkgr/gogs trusty pkgr&quot;&lt;/span&gt; | sudo tee /etc/apt/sources.list.d/gogs.list
 sudo apt-get update
 sudo apt-get install gogs
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;p&gt;```
-gogs:
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gogs:
   image: rosstimson/gogs
   links:
     - db
   ports:
-    - “22:22”
-    - “80:3000”&lt;/p&gt;
+    - &quot;22:22&quot;
+    - &quot;80:3000&quot;
 
-&lt;p&gt;db:
+db:
   image: mariadb:10
   environment:
     MYSQL_ROOT_PASSWORD: rootpass
     MYSQL_DATABASE: gogs
     MYSQL_USER: gogs
     MYSQL_PASSWORD: gogs
-```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;other&quot;&gt;Other&lt;/h2&gt;
 &lt;p&gt;###Install Java in Ubuntu&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-sudo apt-get install default-jre
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;install-nodejs&quot;&gt;Install NodeJS&lt;/h3&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-sudo apt-get install nodejs
-sudo apt-get install npm
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;cheap-performance-test&quot;&gt;Cheap Performance Test&lt;/h3&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-sudo apt-get install siege
-siege -c50 -b -t10S -v http://192.168.232.77:8881/
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;certificate-based-ssh&quot;&gt;Certificate based SSH&lt;/h3&gt;
-
-&lt;p&gt;```bash
-ssh -i “aws_ubuntu.pem” ubuntu@52.29.222.63
-scp -i “aws_ubuntu.pem” /IBM/INSTALL/2_CLOUD/1_URBANCODE/UCD/UCD_6.2.0.1/ibm-ucd-6.2.0.1.716068.zip ubuntu@52.29.222.63:/home/ubuntu&lt;/p&gt;
-
-&lt;p&gt;ssh -i “aws_ubuntu.pem” ibmcloud@52.29.222.63&lt;/p&gt;
-
-&lt;p&gt;```&lt;/p&gt;
-
-&lt;h3 id=&quot;install-ntp-for-date-update&quot;&gt;Install NTP for Date update&lt;/h3&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-sudo ntpdate ntp.ubuntu.com
-sudo apt-get install ntp
-date
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;install-mosquitto&quot;&gt;Install Mosquitto&lt;/h3&gt;
-
-&lt;p&gt;```bash
-mosquitto_passwd -c mosquitto_users demo&lt;/p&gt;
-
-&lt;p&gt;sudo nano /etc/mosquitto/mosquitto.conf&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	Place your local configuration in /etc/mosquitto/conf.d/
-	#
-	# A full description of the configuration file is at
-	# /usr/share/doc/mosquitto/examples/mosquitto.conf.example
-	
-	pid_file /var/run/mosquitto.pid
-	
-	persistence true
-	persistence_location /var/lib/mosquitto/
-	
-	log_dest file /var/log/mosquitto/mosquitto.log
-	
-	include_dir /etc/mosquitto/conf.d
-	
-	
-	password_file /home/demo/mosquitto_users
-	allow_anonymous false
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt-get install default-jre
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;sudo service mosquitto stop
-sudo service mosquitto start&lt;/p&gt;
+&lt;p&gt;###Install NodeJS&lt;/p&gt;
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt-get install nodejs
+sudo apt-get install npm
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;h3 id=&quot;install-openvpn&quot;&gt;Install OpenVPN&lt;/h3&gt;
+&lt;p&gt;###Cheap Performance Test&lt;/p&gt;
 
-&lt;p&gt;```bash
-sudo apt-get install openvpn
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt-get install siege
+siege -c50 -b -t10S -v http://192.168.232.77:8881/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;###Certificate based SSH&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh -i &lt;span class=&quot;s2&quot;&gt;&quot;aws_ubuntu.pem&quot;&lt;/span&gt; ubuntu@52.29.222.63
+scp -i &lt;span class=&quot;s2&quot;&gt;&quot;aws_ubuntu.pem&quot;&lt;/span&gt; /IBM/INSTALL/2_CLOUD/1_URBANCODE/UCD/UCD_6.2.0.1/ibm-ucd-6.2.0.1.716068.zip ubuntu@52.29.222.63:/home/ubuntu
+
+
+ssh -i &lt;span class=&quot;s2&quot;&gt;&quot;aws_ubuntu.pem&quot;&lt;/span&gt; ibmcloud@52.29.222.63
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;###Install NTP for Date update&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo ntpdate ntp.ubuntu.com
+sudo apt-get install ntp
+date
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;###Install Mosquitto&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mosquitto_passwd -c mosquitto_users demo
+
+sudo nano /etc/mosquitto/mosquitto.conf 
+
+		Place your &lt;span class=&quot;nb&quot;&gt;local &lt;/span&gt;configuration &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; /etc/mosquitto/conf.d/
+		&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+		&lt;span class=&quot;c&quot;&gt;# A full description of the configuration file is at&lt;/span&gt;
+		&lt;span class=&quot;c&quot;&gt;# /usr/share/doc/mosquitto/examples/mosquitto.conf.example&lt;/span&gt;
+		
+		pid_file /var/run/mosquitto.pid
+		
+		persistence &lt;span class=&quot;nb&quot;&gt;true
+		&lt;/span&gt;persistence_location /var/lib/mosquitto/
+		
+		log_dest file /var/log/mosquitto/mosquitto.log
+		
+		include_dir /etc/mosquitto/conf.d
+		
+		
+		password_file /home/demo/mosquitto_users
+		allow_anonymous &lt;span class=&quot;nb&quot;&gt;false
+
+
+
+&lt;/span&gt;sudo service mosquitto stop
+sudo service mosquitto start
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;###Install OpenVPN&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt-get install openvpn
 wget http://swupdate.openvpn.org/as/openvpn-as-2.0.24-Ubuntu14.amd_64.deb
-sudo dpkg -i openvpn-as-2.0.24-Ubuntu14.amd_64.deb&lt;/p&gt;
+sudo dpkg -i openvpn-as-2.0.24-Ubuntu14.amd_64.deb 
 
-&lt;p&gt;passwd openvpn
-adduser XXXX&lt;/p&gt;
+passwd openvpn
+adduser XXXX
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;h3 id=&quot;install-pptp&quot;&gt;Install PPTP&lt;/h3&gt;
+&lt;p&gt;###Install PPTP&lt;/p&gt;
 
-&lt;p&gt;```bash
-sudo apt-get install pptpd&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt-get install pptpd
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;edit /etc/pptpd.conf and add the following lines:&lt;/p&gt;
 
-&lt;p&gt;```bash
-localip 10.0.0.1
-remoteip 10.0.0.100-200&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;localip 10.0.0.1
+remoteip 10.0.0.100-200
 
-&lt;p&gt;```
-Where localip is IP address of your server and remoteip are IPs that will be assigned to clients that connect to it.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Where localip is IP address of your server and remoteip are IPs that will be assigned to clients that connect to it.&lt;/p&gt;
 
 &lt;p&gt;Add users and passwords /etc/ppp/chap-secrets&lt;/p&gt;
 
@@ -526,57 +1020,57 @@ ms-dns 8.8.4.4
 
 &lt;p&gt;Now you can start PPTP daemon:&lt;/p&gt;
 
-&lt;p&gt;```bash
-sudo service pptpd restart
-netstat -alpn | grep :1723&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo service pptpd restart
+netstat -alpn | grep :1723
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Setup Forwarding
 edit /etc/sysctl.conf&lt;/p&gt;
 
-&lt;p&gt;```bash
-net.ipv4.ip_forward = 1&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;net.ipv4.ip_forward &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;then run&lt;/p&gt;
 
-&lt;p&gt;```bash
-sysctl -p&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sysctl -p
 
-&lt;p&gt;```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Create a NAT rule for iptables&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE &amp;amp;&amp;amp; iptables-save
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; iptables-save
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-iptables --table nat --append POSTROUTING --out-interface ppp0 -j MASQUERADE
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;iptables --table nat --append POSTROUTING --out-interface ppp0 -j MASQUERADE
 iptables -I INPUT -s 10.0.0.0/8 -i ppp0 -j ACCEPT
 iptables --append FORWARD --in-interface eth0 -j ACCEPT
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;h3 id=&quot;install-pptp-1&quot;&gt;Install PPTP&lt;/h3&gt;
+&lt;p&gt;###Install PPTP&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;bash
-OVPN_DATA=&quot;ovpn-data&quot;
-docker run --name $OVPN_DATA -v /etc/openvpn busybox
-docker run --volumes-from $OVPN_DATA --rm kylemanna/openvpn ovpn_genconfig -u udp://hirt.cc
-docker run --volumes-from $OVPN_DATA --rm -it kylemanna/openvpn ovpn_initpki
-docker run --volumes-from $OVPN_DATA -d -p 1194:1194/udp --cap-add=NET_ADMIN kylemanna/openvpn
-docker run --volumes-from $OVPN_DATA --rm -it kylemanna/openvpn easyrsa build-client-full MBP nopass
-docker run --volumes-from $OVPN_DATA --rm kylemanna/openvpn ovpn_getclient MBP &amp;gt; MBP
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;OVPN_DATA&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;ovpn-data&quot;&lt;/span&gt;
+docker run --name &lt;span class=&quot;nv&quot;&gt;$OVPN_DATA&lt;/span&gt; -v /etc/openvpn busybox
+docker run --volumes-from &lt;span class=&quot;nv&quot;&gt;$OVPN_DATA&lt;/span&gt; --rm kylemanna/openvpn ovpn_genconfig -u udp://hirt.cc
+docker run --volumes-from &lt;span class=&quot;nv&quot;&gt;$OVPN_DATA&lt;/span&gt; --rm -it kylemanna/openvpn ovpn_initpki
+docker run --volumes-from &lt;span class=&quot;nv&quot;&gt;$OVPN_DATA&lt;/span&gt; -d -p 1194:1194/udp --cap-add&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;NET_ADMIN kylemanna/openvpn
+docker run --volumes-from &lt;span class=&quot;nv&quot;&gt;$OVPN_DATA&lt;/span&gt; --rm -it kylemanna/openvpn easyrsa build-client-full MBP nopass
+docker run --volumes-from &lt;span class=&quot;nv&quot;&gt;$OVPN_DATA&lt;/span&gt; --rm kylemanna/openvpn ovpn_getclient MBP &amp;gt; MBP
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;ibm&quot;&gt;IBM&lt;/h2&gt;
 &lt;p&gt;TODO&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-TODO
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;TODO
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;bluemix-containers&quot;&gt;Bluemix Containers&lt;/h3&gt;
 
@@ -585,17 +1079,17 @@ TODO
   &lt;li&gt;Log in to Bluemix:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-cf login
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cf login
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Run the IBM Containers cf CLI plug-in.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-cf ic login
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cf ic login
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;ul&gt;
   &lt;li&gt;
@@ -606,67 +1100,67 @@ cf ic login
   &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker build -t image_name
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker build -t image_name
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Tag the image with your private namespace in the IBM Containers registry.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker tag image_name registry.ng.bluemix.net/niklaushirt/image_name:image_tag
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker tag image_name registry.ng.bluemix.net/niklaushirt/image_name:image_tag
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Push this image to the IBM Containers registry:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker push registry.ng.bluemix.net/niklaushirt/image_name:image_tag
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker push registry.ng.bluemix.net/niklaushirt/image_name:image_tag
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;ul&gt;
   &lt;li&gt;You can create a container from this image in the Bluemix Catalog, or with the following command:&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-cf ic run --name container_name registry.ng.bluemix.net/niklaushirt/image_name:image_tag
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cf ic run --name container_name registry.ng.bluemix.net/niklaushirt/image_name:image_tag
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;commands&quot;&gt;Commands&lt;/h2&gt;
 
 &lt;h3 id=&quot;docker-commands&quot;&gt;Docker Commands&lt;/h3&gt;
 
-&lt;h4 id=&quot;docker-machine-1&quot;&gt;Docker Machine&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####Docker Machine
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 docker-machine create -d=virtualbox TEST
 eval $(docker-machine env TEST)
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker-machine create --driver vmwarefusion --vmwarefusion-memory-size 2048 osxdock 
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker-machine create --driver vmwarefusion --vmwarefusion-memory-size 2048 osxdock 
 eval $(docker-machine env osxdock)
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker-machine create --driver virtualbox --virtualbox-memory 2048 dev 
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker-machine create --driver virtualbox --virtualbox-memory 2048 dev 
 eval $(docker-machine env dev)
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;h4 id=&quot;stop-all-containers&quot;&gt;Stop All containers&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####Stop All containers
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 docker stop $(docker ps -a -q)
 docker rm -v $(docker ps -a -q)
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;build&quot;&gt;BUILD&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####BUILD
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 sudo docker build -t=&quot;jazz502:test&quot; .
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;run&quot;&gt;RUN&lt;/h4&gt;
-&lt;p&gt;```
+&lt;p&gt;####RUN
+```
 sudo docker run -t -i -p 9443:9443 -p 9080:9080 jazz501base&lt;/p&gt;
 
 &lt;p&gt;sudo docker run -d -P -p 9443:9443 -p 9080:9080 –name jazz jazz501inst&lt;/p&gt;
@@ -684,13 +1178,13 @@ sudo docker run -t -i -p 9443:9443 -p 9080:9080 jazz501base&lt;/p&gt;
 &lt;p&gt;sudo docker run -d -P -p 49500:22222 -p 9444:9443 -p 9080:9080 -h lean.jazz.com –name jazzlean jazz502:test
 ```&lt;/p&gt;
 
-&lt;h4 id=&quot;logs&quot;&gt;LOGS&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####LOGS
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 sudo docker logs jazz
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;commit-image&quot;&gt;COMMIT IMAGE&lt;/h4&gt;
-&lt;p&gt;```
+&lt;p&gt;####COMMIT IMAGE
+```
 sudo docker commit -m=”Base Jazz Installed” -a=”Niklaus Hirt” fbed978ca9b3 jazz501:jke_std&lt;/p&gt;
 
 &lt;p&gt;sudo docker commit -m=”Base Jazz Installed” -a=”Niklaus Hirt” 8dc45da94ab7 jazz501:jke_std&lt;/p&gt;
@@ -698,43 +1192,43 @@ sudo docker commit -m=”Base Jazz Installed” -a=”Niklaus Hirt” fbed978ca9
 &lt;p&gt;sudo docker commit -m=”Base Jazz Installed” -a=”Niklaus Hirt” 8dc45da94ab7 jazz501:jke_last
 ```&lt;/p&gt;
 
-&lt;h4 id=&quot;tag-image&quot;&gt;TAG IMAGE&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####TAG IMAGE
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 sudo docker tag 5db5f8471261 ouruser/sinatra:devel
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;stop-all-containers-1&quot;&gt;STOP ALL CONTAINERS&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####STOP ALL CONTAINERS
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 sudo docker stop $(sudo docker ps -a -q)
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;remove-all-containers&quot;&gt;REMOVE ALL CONTAINERS&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####REMOVE ALL CONTAINERS
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 sudo docker rm -v $(sudo docker ps -a -q)
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;remove-all-images&quot;&gt;REMOVE ALL IMAGES!!!!!&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####REMOVE ALL IMAGES!!!!!
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 sudo docker rmi $(sudo docker images -a -q)
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;push&quot;&gt;PUSH&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####PUSH
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 sudo docker push ouruser/sinatra
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;import&quot;&gt;IMPORT&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####IMPORT
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 cat exampleimage.tgz | sudo docker import - exampleimagelocal:new
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;save&quot;&gt;SAVE&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####SAVE
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 sudo docker save -o fedora-latest.tar fedora:latest
 &lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;load&quot;&gt;LOAD&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
+&lt;p&gt;####LOAD
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
 sudo docker load &amp;lt; busybox.tar
 &lt;/code&gt;&lt;/p&gt;
 
@@ -783,9 +1277,9 @@ sudo docker load &amp;lt; busybox.tar
 
 &lt;p&gt;Quick and easy install script provided by Docker:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-curl -sSL https://get.docker.com/ | sh
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl -sSL https://get.docker.com/ | sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;If you’re not willing to run a random shell script, please see the &lt;a href=&quot;https://docs.docker.com/installation/&quot;&gt;installation&lt;/a&gt; instructions for your distribution.&lt;/p&gt;
 
@@ -799,17 +1293,17 @@ curl -sSL https://get.docker.com/ | sh
 
 &lt;p&gt;Once you’ve installed Docker Toolbox, install a VM with Docker Machine using the VirtualBox provider:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker-machine create --driver=virtualbox default
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker-machine create --driver=virtualbox default
 docker-machine ls
 eval &quot;$(docker-machine env default)&quot;
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Then start up a container:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker run hello-world
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run hello-world
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;That’s it, you have a running Docker container.&lt;/p&gt;
 
@@ -969,22 +1463,22 @@ In order to push to this repository tag image with &lt;code class=&quot;highligh
 
 &lt;p&gt;If you have a container with the name CONTAINER (specified by &lt;code class=&quot;highlighter-rouge&quot;&gt;docker run --name CONTAINER&lt;/code&gt;) and in the Dockerfile, it has an exposed port:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-EXPOSE 1337
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;EXPOSE 1337
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Then if we create another container called LINKED like so:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker run -d --link CONTAINER:ALIAS --name LINKED user/wordpress
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run -d --link CONTAINER:ALIAS --name LINKED user/wordpress
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Then the exposed ports and aliases of CONTAINER will show up in LINKED with the following environment variables:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-$ALIAS_PORT_1337_TCP_PORT
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ALIAS_PORT_1337_TCP_PORT
 $ALIAS_PORT_1337_TCP_ADDR
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;And you can connect to it that way.&lt;/p&gt;
 
@@ -1008,9 +1502,9 @@ $ALIAS_PORT_1337_TCP_ADDR
 
 &lt;p&gt;As of 1.3, you can &lt;a href=&quot;https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume&quot;&gt;map MacOS host directories as docker volumes&lt;/a&gt; through boot2docker:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker run -v /Users/wsargent/myapp/src:/src
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run -v /Users/wsargent/myapp/src:/src
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;You can also use remote NFS volumes if you’re &lt;a href=&quot;http://www.tech-d.net/2014/03/29/docker-quicktip-4-remote-volumes/&quot;&gt;feeling brave&lt;/a&gt;.&lt;/p&gt;
 
@@ -1022,35 +1516,35 @@ docker run -v /Users/wsargent/myapp/src:/src
 
 &lt;p&gt;The fastest way is to map the container port to the host port (only using localhost interface) using &lt;code class=&quot;highlighter-rouge&quot;&gt;-p&lt;/code&gt;:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker run -p 127.0.0.1:$HOSTPORT:$CONTAINERPORT --name CONTAINER -t someimage
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run -p 127.0.0.1:$HOSTPORT:$CONTAINERPORT --name CONTAINER -t someimage
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;If you don’t want to use the &lt;code class=&quot;highlighter-rouge&quot;&gt;-p&lt;/code&gt; option on the command line, you can persist port forwarding by using &lt;a href=&quot;https://docs.docker.com/reference/builder/#expose&quot;&gt;EXPOSE&lt;/a&gt;:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-EXPOSE &amp;lt;CONTAINERPORT&amp;gt;
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;EXPOSE &amp;lt;CONTAINERPORT&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;If you’re running Docker in Virtualbox, you then need to forward the port there as well, using &lt;a href=&quot;https://docs.vagrantup.com/v2/networking/forwarded_ports.html&quot;&gt;forwarded_port&lt;/a&gt;.  It can be useful to define something in Vagrantfile to expose a range of ports so that you can dynamically map them:&lt;/p&gt;
 
-&lt;p&gt;```
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  …&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  ...
 
-&lt;p&gt;(49000..49900).each do |port|
+  (49000..49900).each do |port|
     config.vm.network :forwarded_port, :host =&amp;gt; port, :guest =&amp;gt; port
-  end&lt;/p&gt;
+  end
 
-&lt;p&gt;…
+  ...
 end
-```&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;If you forget what you mapped the port to on the host container, use &lt;code class=&quot;highlighter-rouge&quot;&gt;docker port&lt;/code&gt; to show it:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker port CONTAINER $CONTAINERPORT
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker port CONTAINER $CONTAINERPORT
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;examples&quot;&gt;Examples&lt;/h3&gt;
 
@@ -1089,40 +1583,40 @@ docker port CONTAINER $CONTAINERPORT
 
 &lt;p&gt;Turn off interprocess communication with:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker -d --icc=false --iptables
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker -d --icc=false --iptables
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Set the container to be read-only:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker run --read-only
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run --read-only
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Verify images with a hashsum:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker pull debian@sha256:a25306f3850e1bd44541976aa7b5fd0a29be
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker pull debian@sha256:a25306f3850e1bd44541976aa7b5fd0a29be
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Set volumes to be read only:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker run -v $(pwd)/secrets:/secrets:ro debian 
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run -v $(pwd)/secrets:/secrets:ro debian 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Set memory and CPU sharing:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker -c 512 -mem 512m
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker -c 512 -mem 512m
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Define and run a user in your Dockerfile so you don’t run as root inside the container:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-RUN groupadd -r user &amp;amp;&amp;amp; useradd -r -g user user
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;RUN groupadd -r user &amp;amp;&amp;amp; useradd -r -g user user
 USER user
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h2 id=&quot;tips&quot;&gt;Tips&lt;/h2&gt;
 
@@ -1134,93 +1628,93 @@ USER user
 
 &lt;h3 id=&quot;last-ids&quot;&gt;Last Ids&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-alias dl=&#39;docker ps -l -q&#39;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;alias dl=&#39;docker ps -l -q&#39;
 docker run ubuntu echo hello world
 docker commit `dl` helloworld
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;commit-with-command-needs-dockerfile&quot;&gt;Commit with command (needs Dockerfile)&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker commit -run=&#39;{&quot;Cmd&quot;:[&quot;postgres&quot;, &quot;-too -many -opts&quot;]}&#39; `dl` postgres
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker commit -run=&#39;{&quot;Cmd&quot;:[&quot;postgres&quot;, &quot;-too -many -opts&quot;]}&#39; `dl` postgres
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;get-ip-address&quot;&gt;Get IP address&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker inspect `dl` | grep IPAddress | cut -d &#39;&quot;&#39; -f 4
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker inspect `dl` | grep IPAddress | cut -d &#39;&quot;&#39; -f 4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;or&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-wget http://stedolan.github.io/jq/download/source/jq-1.3.tar.gz
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget http://stedolan.github.io/jq/download/source/jq-1.3.tar.gz
 tar xzvf jq-1.3.tar.gz
 cd jq-1.3
 ./configure &amp;amp;&amp;amp; make &amp;amp;&amp;amp; sudo make install
 docker inspect `dl` | jq -r &#39;.[0].NetworkSettings.IPAddress&#39;
-&lt;/code&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;or using a &lt;a href=&quot;https://docs.docker.com/reference/commandline/inspect&quot;&gt;go template&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker inspect -f &#39;&#39; &amp;lt;container_name&amp;gt;
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker inspect -f &#39;&#39; &amp;lt;container_name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;get-port-mapping&quot;&gt;Get port mapping&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker inspect -f &#39;  -&amp;gt;  &#39; &amp;lt;containername&amp;gt;
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker inspect -f &#39;  -&amp;gt;  &#39; &amp;lt;containername&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;find-containers-by-regular-expression&quot;&gt;Find containers by regular expression&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-for i in $(docker ps -a | grep &quot;REGEXP_PATTERN&quot; | cut -f1 -d&quot; &quot;); do echo $i; done`
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;for i in $(docker ps -a | grep &quot;REGEXP_PATTERN&quot; | cut -f1 -d&quot; &quot;); do echo $i; done`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;get-environment-settings&quot;&gt;Get Environment Settings&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker run --rm ubuntu env
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker run --rm ubuntu env
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;kill-running-containers&quot;&gt;Kill running containers&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker kill $(docker ps -q)
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker kill $(docker ps -q)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;delete-old-containers&quot;&gt;Delete old containers&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker ps -a | grep &#39;weeks ago&#39; | awk &#39;{print $1}&#39; | xargs docker rm
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker ps -a | grep &#39;weeks ago&#39; | awk &#39;{print $1}&#39; | xargs docker rm
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;delete-stopped-containers&quot;&gt;Delete stopped containers&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker rm -v `docker ps -a -q -f status=exited`
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker rm -v `docker ps -a -q -f status=exited`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;delete-dangling-images&quot;&gt;Delete dangling images&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker rmi $(docker images -q -f dangling=true)
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker rmi $(docker images -q -f dangling=true)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;delete-all-images&quot;&gt;Delete all images&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker rmi $(docker images -q)
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker rmi $(docker images -q)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;show-image-dependencies&quot;&gt;Show image dependencies&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker images -viz | dot -Tpng -o docker.png
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker images -viz | dot -Tpng -o docker.png
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;h3 id=&quot;slimming-down-docker-containers--intercity-bloghttpbitly1wwo61n&quot;&gt;Slimming down Docker containers  &lt;a href=&quot;http://bit.ly/1Wwo61N&quot;&gt;Intercity Blog&lt;/a&gt;&lt;/h3&gt;
 
@@ -1249,15 +1743,15 @@ gzip -dc image.tgz | docker import - flat-image-name
 
 &lt;p&gt;To check the CPU, memory and network i/o usage, you can use:&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker stats &amp;lt;container&amp;gt;
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker stats &amp;lt;container&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;for a single container or&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-docker stats $(docker ps -q)
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;docker stats $(docker ps -q)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;to monitor all containers on the docker host.&lt;/p&gt;
 </description>

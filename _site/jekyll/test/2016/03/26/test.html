@@ -103,84 +103,83 @@ sudo service docker start</p>
 ```</p>
 
 <h3 id="docker-machine">Docker Machine</h3>
-<p><code class="highlighter-rouge">bash
-cd
-curl -L https://github.com/docker/machine/releases/download/v0.6.0/docker-machine-`uname -s`-`uname -m` &gt;./docker-machine
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nb">cd
+</span>curl -L https://github.com/docker/machine/releases/download/v0.6.0/docker-machine-<span class="sb">`</span>uname -s<span class="sb">`</span>-<span class="sb">`</span>uname -m<span class="sb">`</span> &gt;./docker-machine
 sudo mv docker-machine /usr/local/bin/docker-machine
 chmod +x /usr/local/bin/docker-machine
-</code></p>
+</code></pre>
+</div>
 
 <h3 id="docker-compose">Docker Compose</h3>
-<p><code class="highlighter-rouge">bash
-cd
-sudo curl -L https://github.com/docker/compose/releases/download/1.6.0/docker-compose-`uname -s`-`uname -m` &gt; ./docker-compose
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nb">cd
+</span>sudo curl -L https://github.com/docker/compose/releases/download/1.6.0/docker-compose-<span class="sb">`</span>uname -s<span class="sb">`</span>-<span class="sb">`</span>uname -m<span class="sb">`</span> &gt; ./docker-compose
 sudo mv docker-compose /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
-</code>
-### Docker UI
+</code></pre>
+</div>
+<p>### Docker UI
 <code class="highlighter-rouge">bash
 docker run -d -p 9000:9000 --name "DOCKER_UI" --privileged -v /var/run/docker.sock:/var/run/docker.sock dockerui/dockerui
 </code></p>
 
 <h3 id="docker-ucp">Docker UCP</h3>
-<p><code class="highlighter-rouge">bash
-uname -r
-</code>
-Must be &gt;=3.16</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>uname -r
+</code></pre>
+</div>
+<p>Must be &gt;=3.16</p>
 
-<p><code class="highlighter-rouge">bash
-sudo apt-get install linux-image-generic-lts-utopic -y
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install linux-image-generic-lts-utopic -y
 sudo reboot
 docker run –rm -it -v /var/run/docker.sock:/var/run/docker.sock –name ucp dockerorca/ucp install -i
-</code></p>
+</code></pre>
+</div>
 
 <h3 id="docker-cadvisor">Docker cAdvisor</h3>
 <p>Install cadvisor</p>
 
 <p>https://github.com/google/cadvisor</p>
 
-<p><code class="highlighter-rouge">bash
-sudo docker run \
-  --volume=/:/rootfs:ro \
-  --volume=/var/run:/var/run:rw \
-  --volume=/sys:/sys:ro \
-  --volume=/var/lib/docker/:/var/lib/docker:ro \
-  --publish=9001:8080 \
-  --detach=true \
-  --name=cadvisor \
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo docker run <span class="se">\</span>
+  --volume<span class="o">=</span>/:/rootfs:ro <span class="se">\</span>
+  --volume<span class="o">=</span>/var/run:/var/run:rw <span class="se">\</span>
+  --volume<span class="o">=</span>/sys:/sys:ro <span class="se">\</span>
+  --volume<span class="o">=</span>/var/lib/docker/:/var/lib/docker:ro <span class="se">\</span>
+  --publish<span class="o">=</span>9001:8080 <span class="se">\</span>
+  --detach<span class="o">=</span><span class="nb">true</span> <span class="se">\</span>
+  --name<span class="o">=</span>cadvisor <span class="se">\</span>
   google/cadvisor:latest
-</code></p>
+</code></pre>
+</div>
 
 <h3 id="docker-splunk">Docker Splunk</h3>
 <p>Splunk</p>
 
 <p>https://github.com/outcoldman/docker-splunk</p>
 
-<p><code class="highlighter-rouge">bash
-docker run --hostname splunk -p 9002:8000 -p 9997:9997 -d outcoldman/splunk:6.3.2
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run --hostname splunk -p 9002:8000 -p 9997:9997 -d outcoldman/splunk:6.3.2
+</code></pre>
+</div>
 
 <p>https://hub.docker.com/r/outcoldman/docker-stats-splunk-forwarder/</p>
 
-<p><code class="highlighter-rouge">bash
-    docker run --hostname docker \
-    --name docker_stats_splunk_forwarder \
-    --volume /var/run/docker.sock:/var/run/docker.sock:ro \
-    -e "SPLUNK_FORWARD_SERVER=192.168.232.71:9997" \
-    -e "SPLUNK_USER=root" \
+<div class="highlighter-rouge"><pre class="highlight"><code>    docker run --hostname docker <span class="se">\</span>
+    --name docker_stats_splunk_forwarder <span class="se">\</span>
+    --volume /var/run/docker.sock:/var/run/docker.sock:ro <span class="se">\</span>
+    -e <span class="s2">"SPLUNK_FORWARD_SERVER=192.168.232.71:9997"</span> <span class="se">\</span>
+    -e <span class="s2">"SPLUNK_USER=root"</span> <span class="se">\</span>
     -d outcoldman/docker-stats-splunk-forwarder:latest
-</code></p>
+</code></pre>
+</div>
 
 <p>COMPOSE</p>
 
-<p>```
-vsplunk:
+<div class="highlighter-rouge"><pre class="highlight"><code>vsplunk:
   image: busybox
   volumes:
     - /opt/splunk/etc
-    - /opt/splunk/var</p>
+    - /opt/splunk/var
 
-<p>splunk:
+splunk:
   hostname: splunk
   image: outcoldman/splunk:splunk:6.3.2
   volumes_from:
@@ -189,64 +188,65 @@ vsplunk:
     - 8000:8000
     - 9997:9997
   restart: always
-```</p>
+</code></pre>
+</div>
 
 <h3 id="docker-rancher">Docker Rancher</h3>
 <p>Rancher Server</p>
 
 <p>http://docs.rancher.com/rancher/installing-rancher/installing-server/</p>
 
-<p>```bash
-sudo docker run -d –name RANCHER_SERVER –restart=always -p 9003:8080 rancher/server</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo docker run -d --name RANCHER_SERVER --restart<span class="o">=</span>always -p 9003:8080 rancher/server
 
-<p>```
-Rancher Host</p>
+</code></pre>
+</div>
+<p>Rancher Host</p>
 
 <p>http://docs.rancher.com/rancher/installing-rancher/installing-server/</p>
 
-<p>```bash
-sudo docker run -d –restart=always -p 9003:8080 rancher/server</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo docker run -d --restart<span class="o">=</span>always -p 9003:8080 rancher/server
 
-<p>```</p>
+</code></pre>
+</div>
 
 <h3 id="docker-xxx">Docker XXX</h3>
 <p>XXX</p>
 
 <p>https://github.com/google/XXX</p>
 
-<p><code class="highlighter-rouge">
-TODO
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>TODO
+</code></pre>
+</div>
 
 <h3 id="sensu">Sensu</h3>
 <p>Server</p>
 
 <p>https://hub.docker.com/r/hiroakis/docker-sensu-server/</p>
 
-<p>```bash
-docker run -d -p 10022:22 -p 3006:3000 -p 4567:4567 -p 5671:5671 -p 15672:15672 hiroakis/docker-sensu-server</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run -d -p 10022:22 -p 3006:3000 -p 4567:4567 -p 5671:5671 -p 15672:15672 hiroakis/docker-sensu-server
 
-<p>```</p>
+</code></pre>
+</div>
 
 <p>Client</p>
 
 <p>https://sensuapp.org/docs/0.21/install-repositories</p>
 
-<p>```bash
-wget -q http://repositories.sensuapp.org/apt/pubkey.gpg -O- | sudo apt-key add -
-echo “deb     http://repositories.sensuapp.org/apt sensu main” | sudo tee /etc/apt/sources.list.d/sensu.list
+<div class="highlighter-rouge"><pre class="highlight"><code>wget -q http://repositories.sensuapp.org/apt/pubkey.gpg -O- | sudo apt-key add -
+<span class="nb">echo</span> <span class="s2">"deb     http://repositories.sensuapp.org/apt sensu main"</span> | sudo tee /etc/apt/sources.list.d/sensu.list
 sudo apt-get update
-sudo apt-get install sensu</p>
+sudo apt-get install sensu
 
-<p>```</p>
+</code></pre>
+</div>
 
 <h3 id="neo4j">Neo4j</h3>
 
 <p>https://hub.docker.com/_/neo4j/</p>
 
-<p><code class="highlighter-rouge">bash
-docker run --detach --publish=7474:7474 --volume=$HOME/TEMP/neo4j/data:/data neo4j
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run --detach --publish<span class="o">=</span>7474:7474 --volume<span class="o">=</span><span class="nv">$HOME</span>/TEMP/neo4j/data:/data neo4j
+</code></pre>
+</div>
 
 <h2 id="kubernetes">Kubernetes</h2>
 <p>http://kubernetes.io/v1.1/docs/getting-started-guides/docker.html</p>
@@ -280,265 +280,270 @@ docker run -d --net=host --privileged gcr.io/google_containers/hyperkube:v1.0.1 
 
 <p>Install the kubectl binary</p>
 
-<p>```bash
-wget https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/kubectl
+<div class="highlighter-rouge"><pre class="highlight"><code>wget https://storage.googleapis.com/kubernetes-release/release/v1.0.1/bin/linux/amd64/kubectl
 sudo mv kubectl /usr/local/bin/kubectl
-sudo chmod +x /usr/local/bin/kubectl</p>
+sudo chmod +x /usr/local/bin/kubectl
 
-<p>```</p>
+</code></pre>
+</div>
 
 <p>Run an application</p>
 
-<p><code class="highlighter-rouge">bash
-kubectl -s http://localhost:8080 run nginx --image=nginx --port=80
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>kubectl -s http://localhost:8080 run nginx --image<span class="o">=</span>nginx --port<span class="o">=</span>80
+</code></pre>
+</div>
 
 <p>Test Service</p>
 
-<p><code class="highlighter-rouge">bash
-kubectl expose rc nginx --port=80
+<div class="highlighter-rouge"><pre class="highlight"><code>kubectl expose rc nginx --port<span class="o">=</span>80
 kubectl get svc nginx
-kubectl get svc nginx --template=
-</code></p>
+kubectl get svc nginx --template<span class="o">=</span>
+</code></pre>
+</div>
 
 <p>Scale</p>
 
-<p>```bash
-kubectl get svc nginx</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>kubectl get svc nginx
 
-<p>kubectl get po
-kubectl run my-nginx –image=nginx –replicas=14 –port=80
-kubectl run my-nginx –image=nginx –replicas=14 –port=80
-kubectl scale –replicas=1 rc my-nginx
-kubectl scale –replicas=30 rc my-nginx
-kubectl scale –replicas=1 rc my-nginx</p>
+kubectl get po
+kubectl run my-nginx --image<span class="o">=</span>nginx --replicas<span class="o">=</span>14 --port<span class="o">=</span>80
+kubectl run my-nginx --image<span class="o">=</span>nginx --replicas<span class="o">=</span>14 --port<span class="o">=</span>80
+kubectl scale --replicas<span class="o">=</span>1 rc my-nginx
+kubectl scale --replicas<span class="o">=</span>30 rc my-nginx
+kubectl scale --replicas<span class="o">=</span>1 rc my-nginx
 
-<p>```</p>
+</code></pre>
+</div>
 
 <p>Launching a simple application</p>
 
-<p><code class="highlighter-rouge">bash
-kubectl run my-nginx --image=nginx --replicas=2 --port=80
+<div class="highlighter-rouge"><pre class="highlight"><code>kubectl run my-nginx --image<span class="o">=</span>nginx --replicas<span class="o">=</span>2 --port<span class="o">=</span>80
 kubectl get po
-</code></p>
+</code></pre>
+</div>
 
 <p>Exposing your application to the Internet</p>
 
-<p>```bash
-kubectl expose rc my-nginx –port=80 –type=LoadBalancer
-kubectl get svc my-nginx</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>kubectl expose rc my-nginx --port<span class="o">=</span>80 --type<span class="o">=</span>LoadBalancer
+kubectl get svc my-nginx
 
-<p>```</p>
+</code></pre>
+</div>
 
 <p>Killing the application</p>
 
-<p><code class="highlighter-rouge">bash
-kubectl delete rc my-nginx
+<div class="highlighter-rouge"><pre class="highlight"><code>kubectl delete rc my-nginx
 kubectl delete svc my-nginx
-</code></p>
+</code></pre>
+</div>
 
 <h2 id="vagrant">Vagrant</h2>
 <p>TODO</p>
 
-<p>```bash
-vagrant up
+<div class="highlighter-rouge"><pre class="highlight"><code>vagrant up
 vagrant destroy
-vagrant ssh</p>
-
-<p>vagrant package –output ucd_base_agent
-```</p>
+vagrant ssh
+  
+vagrant package --output ucd_base_agent
+</code></pre>
+</div>
 
 <h2 id="git">GIT</h2>
 
-<p>```bash
-sudo rm -r .git
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo rm -r .git
 git init
 git add .
-git commit -m “first commit”
+git commit -m <span class="s2">"first commit"</span>
 git remote add origin http://hirt.cc:9005/IoT/MQTT_DEMO.git
-git push -u origin master</p>
+git push -u origin master
 
-<p>git init
+
+git init
 git add .
 git status
-git commit -m “Initial Version”
+git commit -m <span class="s2">"Initial Version"</span>
 git remote add origin https://github.com/niklaushirt/urbancode_server_docker.git
-git push -u origin master</p>
+git push -u origin master
+ 
+git pull origin master
 
-<p>git pull origin master</p>
+git clone http://...
 
-<p>git clone http://…</p>
-
-<p>```</p>
+</code></pre>
+</div>
 
 <p>GIT Log History Changes</p>
 
-<p><code class="highlighter-rouge">bash
-git log --numstat --pretty="%H" --since="2016/03/21" --until="2017/02/06" | awk 'NF==3 {plus+=$1; minus+=$2} END {printf("+%d, -%d\n", plus, minus)}'
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>git log --numstat --pretty<span class="o">=</span><span class="s2">"%H"</span> --since<span class="o">=</span><span class="s2">"2016/03/21"</span> --until<span class="o">=</span><span class="s2">"2017/02/06"</span> | awk <span class="s1">'NF==3 {plus+=$1; minus+=$2} END {printf("+%d, -%d\n", plus, minus)}'</span>
+</code></pre>
+</div>
 
 <h2 id="bluemix-cloud-foundry">Bluemix Cloud Foundry</h2>
 
 <p>https://www.ng.bluemix.net/docs/cli/index.html#downloads</p>
 
-<p>```bash
-wget https://cli.run.pivotal.io/stable?release=debian64&amp;version=6.15.0&amp;source=github-rel
-mv stable\?release=debian64 cf_installer.deb 
-sudo dpkg -i cf_installer.deb</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>wget https://cli.run.pivotal.io/stable?release<span class="o">=</span>debian64&amp;version<span class="o">=</span>6.15.0&amp;source<span class="o">=</span>github-rel
+mv stable<span class="se">\?</span><span class="nv">release</span><span class="o">=</span>debian64 cf_installer.deb 
+sudo dpkg -i cf_installer.deb 
 
-<p>cf add-plugin-repo bluemix-cf http://plugins.ng.bluemix.net
-cf install-plugin IBM-Containers -r bluemix-cf</p>
+cf add-plugin-repo bluemix-cf http://plugins.ng.bluemix.net
+cf install-plugin IBM-Containers -r bluemix-cf
 
-<p>dev_mode         1.1.1     cfDevModeDesc <br />
-active-deploy    0.1.76    cfActiveDeployDesc <br />
-IBM-Containers   0.8.499   cfContainersDesc <br />
-bluemix-admin    1.0.0     cfBluemixAdminDesc <br />
-vpn              0.1.1     cfVpnDesc</p>
+dev_mode         1.1.1     cfDevModeDesc   
+active-deploy    0.1.76    cfActiveDeployDesc   
+IBM-Containers   0.8.499   cfContainersDesc   
+bluemix-admin    1.0.0     cfBluemixAdminDesc   
+vpn              0.1.1     cfVpnDesc   
 
-<p>cf install-plugin plugin_name -r bluemix-cf</p>
 
-<p>```</p>
+cf install-plugin plugin_name -r bluemix-cf
 
-<p>```bash
-cf login https://api.ng.bluemix.net</p>
 
-<p>cf api https://api.ng.bluemix.net 
-cf login -u nikh@ch.ibm.com -o nikh@ch.ibm.com -s dev</p>
+</code></pre>
+</div>
 
-<p>```</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cf login https://api.ng.bluemix.net
+
+
+cf api https://api.ng.bluemix.net 
+cf login -u nikh@ch.ibm.com -o nikh@ch.ibm.com -s dev
+
+</code></pre>
+</div>
 
 <h2 id="gogs-local-github">GOGS local github</h2>
 
 <p>https://github.com/gogits/gogs</p>
 
-<p>```bash
-docker run -d –name=gogs -p 10022:22 -p 10080:3000 -v /Users/nhirt/TEMP/gogs:/data gogs/gogs</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run -d --name<span class="o">=</span>gogs -p 10022:22 -p 10080:3000 -v /Users/nhirt/TEMP/gogs:/data gogs/gogs
 
-<p>```</p>
+</code></pre>
+</div>
 
-<p><code class="highlighter-rouge">bash
-wget -qO - https://deb.packager.io/key | sudo apt-key add -
-echo "deb https://deb.packager.io/gh/pkgr/gogs trusty pkgr" | sudo tee /etc/apt/sources.list.d/gogs.list
+<div class="highlighter-rouge"><pre class="highlight"><code>wget -qO - https://deb.packager.io/key | sudo apt-key add -
+<span class="nb">echo</span> <span class="s2">"deb https://deb.packager.io/gh/pkgr/gogs trusty pkgr"</span> | sudo tee /etc/apt/sources.list.d/gogs.list
 sudo apt-get update
 sudo apt-get install gogs
-</code></p>
+</code></pre>
+</div>
 
-<p>```
-gogs:
+<div class="highlighter-rouge"><pre class="highlight"><code>gogs:
   image: rosstimson/gogs
   links:
     - db
   ports:
-    - “22:22”
-    - “80:3000”</p>
+    - "22:22"
+    - "80:3000"
 
-<p>db:
+db:
   image: mariadb:10
   environment:
     MYSQL_ROOT_PASSWORD: rootpass
     MYSQL_DATABASE: gogs
     MYSQL_USER: gogs
     MYSQL_PASSWORD: gogs
-```</p>
+</code></pre>
+</div>
 
 <h2 id="other">Other</h2>
 <p>###Install Java in Ubuntu</p>
 
-<p><code class="highlighter-rouge">bash
-sudo apt-get install default-jre
-</code></p>
-
-<h3 id="install-nodejs">Install NodeJS</h3>
-
-<p><code class="highlighter-rouge">bash
-sudo apt-get install nodejs
-sudo apt-get install npm
-</code></p>
-
-<h3 id="cheap-performance-test">Cheap Performance Test</h3>
-
-<p><code class="highlighter-rouge">bash
-sudo apt-get install siege
-siege -c50 -b -t10S -v http://192.168.232.77:8881/
-</code></p>
-
-<h3 id="certificate-based-ssh">Certificate based SSH</h3>
-
-<p>```bash
-ssh -i “aws_ubuntu.pem” ubuntu@52.29.222.63
-scp -i “aws_ubuntu.pem” /IBM/INSTALL/2_CLOUD/1_URBANCODE/UCD/UCD_6.2.0.1/ibm-ucd-6.2.0.1.716068.zip ubuntu@52.29.222.63:/home/ubuntu</p>
-
-<p>ssh -i “aws_ubuntu.pem” ibmcloud@52.29.222.63</p>
-
-<p>```</p>
-
-<h3 id="install-ntp-for-date-update">Install NTP for Date update</h3>
-
-<p><code class="highlighter-rouge">bash
-sudo ntpdate ntp.ubuntu.com
-sudo apt-get install ntp
-date
-</code></p>
-
-<h3 id="install-mosquitto">Install Mosquitto</h3>
-
-<p>```bash
-mosquitto_passwd -c mosquitto_users demo</p>
-
-<p>sudo nano /etc/mosquitto/mosquitto.conf</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>	Place your local configuration in /etc/mosquitto/conf.d/
-	#
-	# A full description of the configuration file is at
-	# /usr/share/doc/mosquitto/examples/mosquitto.conf.example
-	
-	pid_file /var/run/mosquitto.pid
-	
-	persistence true
-	persistence_location /var/lib/mosquitto/
-	
-	log_dest file /var/log/mosquitto/mosquitto.log
-	
-	include_dir /etc/mosquitto/conf.d
-	
-	
-	password_file /home/demo/mosquitto_users
-	allow_anonymous false
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install default-jre
 </code></pre>
 </div>
 
-<p>sudo service mosquitto stop
-sudo service mosquitto start</p>
+<p>###Install NodeJS</p>
 
-<p>```</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install nodejs
+sudo apt-get install npm
+</code></pre>
+</div>
 
-<h3 id="install-openvpn">Install OpenVPN</h3>
+<p>###Cheap Performance Test</p>
 
-<p>```bash
-sudo apt-get install openvpn
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install siege
+siege -c50 -b -t10S -v http://192.168.232.77:8881/
+</code></pre>
+</div>
+
+<p>###Certificate based SSH</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>ssh -i <span class="s2">"aws_ubuntu.pem"</span> ubuntu@52.29.222.63
+scp -i <span class="s2">"aws_ubuntu.pem"</span> /IBM/INSTALL/2_CLOUD/1_URBANCODE/UCD/UCD_6.2.0.1/ibm-ucd-6.2.0.1.716068.zip ubuntu@52.29.222.63:/home/ubuntu
+
+
+ssh -i <span class="s2">"aws_ubuntu.pem"</span> ibmcloud@52.29.222.63
+
+</code></pre>
+</div>
+
+<p>###Install NTP for Date update</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo ntpdate ntp.ubuntu.com
+sudo apt-get install ntp
+date
+</code></pre>
+</div>
+
+<p>###Install Mosquitto</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mosquitto_passwd -c mosquitto_users demo
+
+sudo nano /etc/mosquitto/mosquitto.conf 
+
+		Place your <span class="nb">local </span>configuration <span class="k">in</span> /etc/mosquitto/conf.d/
+		<span class="c">#</span>
+		<span class="c"># A full description of the configuration file is at</span>
+		<span class="c"># /usr/share/doc/mosquitto/examples/mosquitto.conf.example</span>
+		
+		pid_file /var/run/mosquitto.pid
+		
+		persistence <span class="nb">true
+		</span>persistence_location /var/lib/mosquitto/
+		
+		log_dest file /var/log/mosquitto/mosquitto.log
+		
+		include_dir /etc/mosquitto/conf.d
+		
+		
+		password_file /home/demo/mosquitto_users
+		allow_anonymous <span class="nb">false
+
+
+
+</span>sudo service mosquitto stop
+sudo service mosquitto start
+
+</code></pre>
+</div>
+
+<p>###Install OpenVPN</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install openvpn
 wget http://swupdate.openvpn.org/as/openvpn-as-2.0.24-Ubuntu14.amd_64.deb
-sudo dpkg -i openvpn-as-2.0.24-Ubuntu14.amd_64.deb</p>
+sudo dpkg -i openvpn-as-2.0.24-Ubuntu14.amd_64.deb 
 
-<p>passwd openvpn
-adduser XXXX</p>
+passwd openvpn
+adduser XXXX
 
-<p>```</p>
+</code></pre>
+</div>
 
-<h3 id="install-pptp">Install PPTP</h3>
+<p>###Install PPTP</p>
 
-<p>```bash
-sudo apt-get install pptpd</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install pptpd
 
-<p>```</p>
+</code></pre>
+</div>
 
 <p>edit /etc/pptpd.conf and add the following lines:</p>
 
-<p>```bash
-localip 10.0.0.1
-remoteip 10.0.0.100-200</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>localip 10.0.0.1
+remoteip 10.0.0.100-200
 
-<p>```
-Where localip is IP address of your server and remoteip are IPs that will be assigned to clients that connect to it.</p>
+</code></pre>
+</div>
+<p>Where localip is IP address of your server and remoteip are IPs that will be assigned to clients that connect to it.</p>
 
 <p>Add users and passwords /etc/ppp/chap-secrets</p>
 
@@ -552,57 +557,57 @@ ms-dns 8.8.4.4
 
 <p>Now you can start PPTP daemon:</p>
 
-<p>```bash
-sudo service pptpd restart
-netstat -alpn | grep :1723</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo service pptpd restart
+netstat -alpn | grep :1723
 
-<p>```</p>
+</code></pre>
+</div>
 
 <p>Setup Forwarding
 edit /etc/sysctl.conf</p>
 
-<p>```bash
-net.ipv4.ip_forward = 1</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>net.ipv4.ip_forward <span class="o">=</span> 1
 
-<p>```</p>
+</code></pre>
+</div>
 
 <p>then run</p>
 
-<p>```bash
-sysctl -p</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>sysctl -p
 
-<p>```</p>
+</code></pre>
+</div>
 
 <p>Create a NAT rule for iptables</p>
 
-<p><code class="highlighter-rouge">bash
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE &amp;&amp; iptables-save
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE <span class="o">&amp;&amp;</span> iptables-save
+</code></pre>
+</div>
 
-<p><code class="highlighter-rouge">
-iptables --table nat --append POSTROUTING --out-interface ppp0 -j MASQUERADE
+<div class="highlighter-rouge"><pre class="highlight"><code>iptables --table nat --append POSTROUTING --out-interface ppp0 -j MASQUERADE
 iptables -I INPUT -s 10.0.0.0/8 -i ppp0 -j ACCEPT
 iptables --append FORWARD --in-interface eth0 -j ACCEPT
-</code></p>
+</code></pre>
+</div>
 
-<h3 id="install-pptp-1">Install PPTP</h3>
+<p>###Install PPTP</p>
 
-<p><code class="highlighter-rouge">bash
-OVPN_DATA="ovpn-data"
-docker run --name $OVPN_DATA -v /etc/openvpn busybox
-docker run --volumes-from $OVPN_DATA --rm kylemanna/openvpn ovpn_genconfig -u udp://hirt.cc
-docker run --volumes-from $OVPN_DATA --rm -it kylemanna/openvpn ovpn_initpki
-docker run --volumes-from $OVPN_DATA -d -p 1194:1194/udp --cap-add=NET_ADMIN kylemanna/openvpn
-docker run --volumes-from $OVPN_DATA --rm -it kylemanna/openvpn easyrsa build-client-full MBP nopass
-docker run --volumes-from $OVPN_DATA --rm kylemanna/openvpn ovpn_getclient MBP &gt; MBP
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nv">OVPN_DATA</span><span class="o">=</span><span class="s2">"ovpn-data"</span>
+docker run --name <span class="nv">$OVPN_DATA</span> -v /etc/openvpn busybox
+docker run --volumes-from <span class="nv">$OVPN_DATA</span> --rm kylemanna/openvpn ovpn_genconfig -u udp://hirt.cc
+docker run --volumes-from <span class="nv">$OVPN_DATA</span> --rm -it kylemanna/openvpn ovpn_initpki
+docker run --volumes-from <span class="nv">$OVPN_DATA</span> -d -p 1194:1194/udp --cap-add<span class="o">=</span>NET_ADMIN kylemanna/openvpn
+docker run --volumes-from <span class="nv">$OVPN_DATA</span> --rm -it kylemanna/openvpn easyrsa build-client-full MBP nopass
+docker run --volumes-from <span class="nv">$OVPN_DATA</span> --rm kylemanna/openvpn ovpn_getclient MBP &gt; MBP
+</code></pre>
+</div>
 
 <h2 id="ibm">IBM</h2>
 <p>TODO</p>
 
-<p><code class="highlighter-rouge">
-TODO
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>TODO
+</code></pre>
+</div>
 
 <h3 id="bluemix-containers">Bluemix Containers</h3>
 
@@ -611,17 +616,17 @@ TODO
   <li>Log in to Bluemix:</li>
 </ul>
 
-<p><code class="highlighter-rouge">
-cf login
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cf login
+</code></pre>
+</div>
 
 <ul>
   <li>Run the IBM Containers cf CLI plug-in.</li>
 </ul>
 
-<p><code class="highlighter-rouge">
-cf ic login
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cf ic login
+</code></pre>
+</div>
 
 <ul>
   <li>
@@ -632,67 +637,67 @@ cf ic login
   </li>
 </ul>
 
-<p><code class="highlighter-rouge">
-docker build -t image_name
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker build -t image_name
+</code></pre>
+</div>
 
 <ul>
   <li>Tag the image with your private namespace in the IBM Containers registry.</li>
 </ul>
 
-<p><code class="highlighter-rouge">
-docker tag image_name registry.ng.bluemix.net/niklaushirt/image_name:image_tag
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker tag image_name registry.ng.bluemix.net/niklaushirt/image_name:image_tag
+</code></pre>
+</div>
 
 <ul>
   <li>Push this image to the IBM Containers registry:</li>
 </ul>
 
-<p><code class="highlighter-rouge">
-docker push registry.ng.bluemix.net/niklaushirt/image_name:image_tag
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker push registry.ng.bluemix.net/niklaushirt/image_name:image_tag
+</code></pre>
+</div>
 
 <ul>
   <li>You can create a container from this image in the Bluemix Catalog, or with the following command:</li>
 </ul>
 
-<p><code class="highlighter-rouge">
-cf ic run --name container_name registry.ng.bluemix.net/niklaushirt/image_name:image_tag
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cf ic run --name container_name registry.ng.bluemix.net/niklaushirt/image_name:image_tag
+</code></pre>
+</div>
 
 <h2 id="commands">Commands</h2>
 
 <h3 id="docker-commands">Docker Commands</h3>
 
-<h4 id="docker-machine-1">Docker Machine</h4>
-<p><code class="highlighter-rouge">
+<p>####Docker Machine
+<code class="highlighter-rouge">
 docker-machine create -d=virtualbox TEST
 eval $(docker-machine env TEST)
 </code></p>
 
-<p><code class="highlighter-rouge">
-docker-machine create --driver vmwarefusion --vmwarefusion-memory-size 2048 osxdock 
+<div class="highlighter-rouge"><pre class="highlight"><code>docker-machine create --driver vmwarefusion --vmwarefusion-memory-size 2048 osxdock 
 eval $(docker-machine env osxdock)
-</code></p>
+</code></pre>
+</div>
 
-<p><code class="highlighter-rouge">
-docker-machine create --driver virtualbox --virtualbox-memory 2048 dev 
+<div class="highlighter-rouge"><pre class="highlight"><code>docker-machine create --driver virtualbox --virtualbox-memory 2048 dev 
 eval $(docker-machine env dev)
-</code></p>
+</code></pre>
+</div>
 
-<h4 id="stop-all-containers">Stop All containers</h4>
-<p><code class="highlighter-rouge">
+<p>####Stop All containers
+<code class="highlighter-rouge">
 docker stop $(docker ps -a -q)
 docker rm -v $(docker ps -a -q)
 </code></p>
 
-<h4 id="build">BUILD</h4>
-<p><code class="highlighter-rouge">
+<p>####BUILD
+<code class="highlighter-rouge">
 sudo docker build -t="jazz502:test" .
 </code></p>
 
-<h4 id="run">RUN</h4>
-<p>```
+<p>####RUN
+```
 sudo docker run -t -i -p 9443:9443 -p 9080:9080 jazz501base</p>
 
 <p>sudo docker run -d -P -p 9443:9443 -p 9080:9080 –name jazz jazz501inst</p>
@@ -710,13 +715,13 @@ sudo docker run -t -i -p 9443:9443 -p 9080:9080 jazz501base</p>
 <p>sudo docker run -d -P -p 49500:22222 -p 9444:9443 -p 9080:9080 -h lean.jazz.com –name jazzlean jazz502:test
 ```</p>
 
-<h4 id="logs">LOGS</h4>
-<p><code class="highlighter-rouge">
+<p>####LOGS
+<code class="highlighter-rouge">
 sudo docker logs jazz
 </code></p>
 
-<h4 id="commit-image">COMMIT IMAGE</h4>
-<p>```
+<p>####COMMIT IMAGE
+```
 sudo docker commit -m=”Base Jazz Installed” -a=”Niklaus Hirt” fbed978ca9b3 jazz501:jke_std</p>
 
 <p>sudo docker commit -m=”Base Jazz Installed” -a=”Niklaus Hirt” 8dc45da94ab7 jazz501:jke_std</p>
@@ -724,43 +729,43 @@ sudo docker commit -m=”Base Jazz Installed” -a=”Niklaus Hirt” fbed978ca9
 <p>sudo docker commit -m=”Base Jazz Installed” -a=”Niklaus Hirt” 8dc45da94ab7 jazz501:jke_last
 ```</p>
 
-<h4 id="tag-image">TAG IMAGE</h4>
-<p><code class="highlighter-rouge">
+<p>####TAG IMAGE
+<code class="highlighter-rouge">
 sudo docker tag 5db5f8471261 ouruser/sinatra:devel
 </code></p>
 
-<h4 id="stop-all-containers-1">STOP ALL CONTAINERS</h4>
-<p><code class="highlighter-rouge">
+<p>####STOP ALL CONTAINERS
+<code class="highlighter-rouge">
 sudo docker stop $(sudo docker ps -a -q)
 </code></p>
 
-<h4 id="remove-all-containers">REMOVE ALL CONTAINERS</h4>
-<p><code class="highlighter-rouge">
+<p>####REMOVE ALL CONTAINERS
+<code class="highlighter-rouge">
 sudo docker rm -v $(sudo docker ps -a -q)
 </code></p>
 
-<h4 id="remove-all-images">REMOVE ALL IMAGES!!!!!</h4>
-<p><code class="highlighter-rouge">
+<p>####REMOVE ALL IMAGES!!!!!
+<code class="highlighter-rouge">
 sudo docker rmi $(sudo docker images -a -q)
 </code></p>
 
-<h4 id="push">PUSH</h4>
-<p><code class="highlighter-rouge">
+<p>####PUSH
+<code class="highlighter-rouge">
 sudo docker push ouruser/sinatra
 </code></p>
 
-<h4 id="import">IMPORT</h4>
-<p><code class="highlighter-rouge">
+<p>####IMPORT
+<code class="highlighter-rouge">
 cat exampleimage.tgz | sudo docker import - exampleimagelocal:new
 </code></p>
 
-<h4 id="save">SAVE</h4>
-<p><code class="highlighter-rouge">
+<p>####SAVE
+<code class="highlighter-rouge">
 sudo docker save -o fedora-latest.tar fedora:latest
 </code></p>
 
-<h4 id="load">LOAD</h4>
-<p><code class="highlighter-rouge">
+<p>####LOAD
+<code class="highlighter-rouge">
 sudo docker load &lt; busybox.tar
 </code></p>
 
@@ -809,9 +814,9 @@ sudo docker load &lt; busybox.tar
 
 <p>Quick and easy install script provided by Docker:</p>
 
-<p><code class="highlighter-rouge">
-curl -sSL https://get.docker.com/ | sh
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>curl -sSL https://get.docker.com/ | sh
+</code></pre>
+</div>
 
 <p>If you’re not willing to run a random shell script, please see the <a href="https://docs.docker.com/installation/">installation</a> instructions for your distribution.</p>
 
@@ -825,17 +830,17 @@ curl -sSL https://get.docker.com/ | sh
 
 <p>Once you’ve installed Docker Toolbox, install a VM with Docker Machine using the VirtualBox provider:</p>
 
-<p><code class="highlighter-rouge">
-docker-machine create --driver=virtualbox default
+<div class="highlighter-rouge"><pre class="highlight"><code>docker-machine create --driver=virtualbox default
 docker-machine ls
 eval "$(docker-machine env default)"
-</code></p>
+</code></pre>
+</div>
 
 <p>Then start up a container:</p>
 
-<p><code class="highlighter-rouge">
-docker run hello-world
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run hello-world
+</code></pre>
+</div>
 
 <p>That’s it, you have a running Docker container.</p>
 
@@ -995,22 +1000,22 @@ In order to push to this repository tag image with <code class="highlighter-roug
 
 <p>If you have a container with the name CONTAINER (specified by <code class="highlighter-rouge">docker run --name CONTAINER</code>) and in the Dockerfile, it has an exposed port:</p>
 
-<p><code class="highlighter-rouge">
-EXPOSE 1337
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>EXPOSE 1337
+</code></pre>
+</div>
 
 <p>Then if we create another container called LINKED like so:</p>
 
-<p><code class="highlighter-rouge">
-docker run -d --link CONTAINER:ALIAS --name LINKED user/wordpress
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run -d --link CONTAINER:ALIAS --name LINKED user/wordpress
+</code></pre>
+</div>
 
 <p>Then the exposed ports and aliases of CONTAINER will show up in LINKED with the following environment variables:</p>
 
-<p><code class="highlighter-rouge">
-$ALIAS_PORT_1337_TCP_PORT
+<div class="highlighter-rouge"><pre class="highlight"><code>$ALIAS_PORT_1337_TCP_PORT
 $ALIAS_PORT_1337_TCP_ADDR
-</code></p>
+</code></pre>
+</div>
 
 <p>And you can connect to it that way.</p>
 
@@ -1034,9 +1039,9 @@ $ALIAS_PORT_1337_TCP_ADDR
 
 <p>As of 1.3, you can <a href="https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume">map MacOS host directories as docker volumes</a> through boot2docker:</p>
 
-<p><code class="highlighter-rouge">
-docker run -v /Users/wsargent/myapp/src:/src
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run -v /Users/wsargent/myapp/src:/src
+</code></pre>
+</div>
 
 <p>You can also use remote NFS volumes if you’re <a href="http://www.tech-d.net/2014/03/29/docker-quicktip-4-remote-volumes/">feeling brave</a>.</p>
 
@@ -1048,35 +1053,35 @@ docker run -v /Users/wsargent/myapp/src:/src
 
 <p>The fastest way is to map the container port to the host port (only using localhost interface) using <code class="highlighter-rouge">-p</code>:</p>
 
-<p><code class="highlighter-rouge">
-docker run -p 127.0.0.1:$HOSTPORT:$CONTAINERPORT --name CONTAINER -t someimage
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run -p 127.0.0.1:$HOSTPORT:$CONTAINERPORT --name CONTAINER -t someimage
+</code></pre>
+</div>
 
 <p>If you don’t want to use the <code class="highlighter-rouge">-p</code> option on the command line, you can persist port forwarding by using <a href="https://docs.docker.com/reference/builder/#expose">EXPOSE</a>:</p>
 
-<p><code class="highlighter-rouge">
-EXPOSE &lt;CONTAINERPORT&gt;
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>EXPOSE &lt;CONTAINERPORT&gt;
+</code></pre>
+</div>
 
 <p>If you’re running Docker in Virtualbox, you then need to forward the port there as well, using <a href="https://docs.vagrantup.com/v2/networking/forwarded_ports.html">forwarded_port</a>.  It can be useful to define something in Vagrantfile to expose a range of ports so that you can dynamically map them:</p>
 
-<p>```
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  …</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  ...
 
-<p>(49000..49900).each do |port|
+  (49000..49900).each do |port|
     config.vm.network :forwarded_port, :host =&gt; port, :guest =&gt; port
-  end</p>
+  end
 
-<p>…
+  ...
 end
-```</p>
+</code></pre>
+</div>
 
 <p>If you forget what you mapped the port to on the host container, use <code class="highlighter-rouge">docker port</code> to show it:</p>
 
-<p><code class="highlighter-rouge">
-docker port CONTAINER $CONTAINERPORT
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker port CONTAINER $CONTAINERPORT
+</code></pre>
+</div>
 
 <h3 id="examples">Examples</h3>
 
@@ -1115,40 +1120,40 @@ docker port CONTAINER $CONTAINERPORT
 
 <p>Turn off interprocess communication with:</p>
 
-<p><code class="highlighter-rouge">
-docker -d --icc=false --iptables
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker -d --icc=false --iptables
+</code></pre>
+</div>
 
 <p>Set the container to be read-only:</p>
 
-<p><code class="highlighter-rouge">
-docker run --read-only
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run --read-only
+</code></pre>
+</div>
 
 <p>Verify images with a hashsum:</p>
 
-<p><code class="highlighter-rouge">
-docker pull debian@sha256:a25306f3850e1bd44541976aa7b5fd0a29be
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker pull debian@sha256:a25306f3850e1bd44541976aa7b5fd0a29be
+</code></pre>
+</div>
 
 <p>Set volumes to be read only:</p>
 
-<p><code class="highlighter-rouge">
-docker run -v $(pwd)/secrets:/secrets:ro debian 
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run -v $(pwd)/secrets:/secrets:ro debian 
+</code></pre>
+</div>
 
 <p>Set memory and CPU sharing:</p>
 
-<p><code class="highlighter-rouge">
-docker -c 512 -mem 512m
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker -c 512 -mem 512m
+</code></pre>
+</div>
 
 <p>Define and run a user in your Dockerfile so you don’t run as root inside the container:</p>
 
-<p><code class="highlighter-rouge">
-RUN groupadd -r user &amp;&amp; useradd -r -g user user
+<div class="highlighter-rouge"><pre class="highlight"><code>RUN groupadd -r user &amp;&amp; useradd -r -g user user
 USER user
-</code></p>
+</code></pre>
+</div>
 
 <h2 id="tips">Tips</h2>
 
@@ -1160,93 +1165,93 @@ USER user
 
 <h3 id="last-ids">Last Ids</h3>
 
-<p><code class="highlighter-rouge">
-alias dl='docker ps -l -q'
+<div class="highlighter-rouge"><pre class="highlight"><code>alias dl='docker ps -l -q'
 docker run ubuntu echo hello world
 docker commit `dl` helloworld
-</code></p>
+</code></pre>
+</div>
 
 <h3 id="commit-with-command-needs-dockerfile">Commit with command (needs Dockerfile)</h3>
 
-<p><code class="highlighter-rouge">
-docker commit -run='{"Cmd":["postgres", "-too -many -opts"]}' `dl` postgres
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker commit -run='{"Cmd":["postgres", "-too -many -opts"]}' `dl` postgres
+</code></pre>
+</div>
 
 <h3 id="get-ip-address">Get IP address</h3>
 
-<p><code class="highlighter-rouge">
-docker inspect `dl` | grep IPAddress | cut -d '"' -f 4
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker inspect `dl` | grep IPAddress | cut -d '"' -f 4
+</code></pre>
+</div>
 
 <p>or</p>
 
-<p><code class="highlighter-rouge">
-wget http://stedolan.github.io/jq/download/source/jq-1.3.tar.gz
+<div class="highlighter-rouge"><pre class="highlight"><code>wget http://stedolan.github.io/jq/download/source/jq-1.3.tar.gz
 tar xzvf jq-1.3.tar.gz
 cd jq-1.3
 ./configure &amp;&amp; make &amp;&amp; sudo make install
 docker inspect `dl` | jq -r '.[0].NetworkSettings.IPAddress'
-</code></p>
+</code></pre>
+</div>
 
 <p>or using a <a href="https://docs.docker.com/reference/commandline/inspect">go template</a></p>
 
-<p><code class="highlighter-rouge">
-docker inspect -f '' &lt;container_name&gt;
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker inspect -f '' &lt;container_name&gt;
+</code></pre>
+</div>
 
 <h3 id="get-port-mapping">Get port mapping</h3>
 
-<p><code class="highlighter-rouge">
-docker inspect -f '  -&gt;  ' &lt;containername&gt;
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker inspect -f '  -&gt;  ' &lt;containername&gt;
+</code></pre>
+</div>
 
 <h3 id="find-containers-by-regular-expression">Find containers by regular expression</h3>
 
-<p><code class="highlighter-rouge">
-for i in $(docker ps -a | grep "REGEXP_PATTERN" | cut -f1 -d" "); do echo $i; done`
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>for i in $(docker ps -a | grep "REGEXP_PATTERN" | cut -f1 -d" "); do echo $i; done`
+</code></pre>
+</div>
 
 <h3 id="get-environment-settings">Get Environment Settings</h3>
 
-<p><code class="highlighter-rouge">
-docker run --rm ubuntu env
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run --rm ubuntu env
+</code></pre>
+</div>
 
 <h3 id="kill-running-containers">Kill running containers</h3>
 
-<p><code class="highlighter-rouge">
-docker kill $(docker ps -q)
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker kill $(docker ps -q)
+</code></pre>
+</div>
 
 <h3 id="delete-old-containers">Delete old containers</h3>
 
-<p><code class="highlighter-rouge">
-docker ps -a | grep 'weeks ago' | awk '{print $1}' | xargs docker rm
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker ps -a | grep 'weeks ago' | awk '{print $1}' | xargs docker rm
+</code></pre>
+</div>
 
 <h3 id="delete-stopped-containers">Delete stopped containers</h3>
 
-<p><code class="highlighter-rouge">
-docker rm -v `docker ps -a -q -f status=exited`
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker rm -v `docker ps -a -q -f status=exited`
+</code></pre>
+</div>
 
 <h3 id="delete-dangling-images">Delete dangling images</h3>
 
-<p><code class="highlighter-rouge">
-docker rmi $(docker images -q -f dangling=true)
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker rmi $(docker images -q -f dangling=true)
+</code></pre>
+</div>
 
 <h3 id="delete-all-images">Delete all images</h3>
 
-<p><code class="highlighter-rouge">
-docker rmi $(docker images -q)
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker rmi $(docker images -q)
+</code></pre>
+</div>
 
 <h3 id="show-image-dependencies">Show image dependencies</h3>
 
-<p><code class="highlighter-rouge">
-docker images -viz | dot -Tpng -o docker.png
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker images -viz | dot -Tpng -o docker.png
+</code></pre>
+</div>
 
 <h3 id="slimming-down-docker-containers--intercity-bloghttpbitly1wwo61n">Slimming down Docker containers  <a href="http://bit.ly/1Wwo61N">Intercity Blog</a></h3>
 
@@ -1275,15 +1280,15 @@ gzip -dc image.tgz | docker import - flat-image-name
 
 <p>To check the CPU, memory and network i/o usage, you can use:</p>
 
-<p><code class="highlighter-rouge">
-docker stats &lt;container&gt;
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker stats &lt;container&gt;
+</code></pre>
+</div>
 
 <p>for a single container or</p>
 
-<p><code class="highlighter-rouge">
-docker stats $(docker ps -q)
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker stats $(docker ps -q)
+</code></pre>
+</div>
 
 <p>to monitor all containers on the docker host.</p>
 
