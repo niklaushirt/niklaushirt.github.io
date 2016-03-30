@@ -11,7 +11,7 @@ This article describes my process of automatically creating deployment targets f
 
 All the sourcecode is freely available in my [GitHub repository](https://github.com/niklaushirt/UrbanCode_Vagrant){:target="_blank"}.
 
-
+<br>
 
 
 ## Prerequisites
@@ -144,9 +144,12 @@ When done, we'll create a box image of the base
 
 ```shell
 vagrant package --output base_agent.box
-```
+```  
+   
 
-sdfadfs
+---
+
+# Part 2 of this article is [here](http://niklaushirt.github.io/urbancode/vagrant/2016/03/30/vagrant_ucd_part2.html) 
 
 
 

@@ -7,5 +7,5 @@ permalink: /dist/
 
 Downloads:
 
-[Download1](https://raw.githubusercontent.com/niklaushirt/DOCKER_DEMO/master/app.js)
+[Git Repository](https://github.com/niklaushirt){:target="_blank"}
 

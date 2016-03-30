@@ -1,9 +1,10 @@
 ---
 layout: post
 title:  "Easy UrbanCode Deploy with Vagrant (part 2)"
-date:   2016-03-30 07:45:12 +0100
+date:   2016-04-30 07:45:12 +0100
 categories: urbancode vagrant
 ---
+![header](/assets/vagrant_article_header.jpg)
 
 This article describes my process of automatically creating deployment targets for an IBM UrbanCode Deploy environment.
 
