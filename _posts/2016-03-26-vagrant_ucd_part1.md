@@ -4,26 +4,36 @@ title:  "Easy UrbanCode Deploy with Vagrant (part 1)"
 date:   2016-03-30 07:45:12 +0100
 categories: urbancode vagrant
 ---
+![header](/assets/vagrant_article_header.jpg)
+
 
 This article describes my process of automatically creating deployment targets for an IBM UrbanCode Deploy environment.
 
+All the sourcecode is freely available in my [GitHub repository](https://github.com/niklaushirt/UrbanCode_Vagrant){:target="_blank"}.
+
+
+
+
 ## Prerequisites
-Vagrant must be [installed on your local machine](https://www.vagrantup.com/docs/getting-started/index.html). 
-It can be downloaded and installed from [here](https://docs.vagrantup.com/v2/getting-started/index.html).
+Vagrant must be [installed on your local machine](https://www.vagrantup.com/docs/getting-started/index.html){:target="_blank"}. 
+It can be downloaded and installed from [here](https://www.vagrantup.com/downloads.html){:target="_blank"}.
 
 
 ## Building the bases
 
 In order to optimise performance, in this first article we will first build a base box image containing some basic stuff:
 
-* The IBM UrbanCode Deploy Agent installation files
 * Java JRE
+
+And optional (to speed-up VM creation):
+
 * Docker engine
 * Docker compose
 * NodeJS
 * NPM
 
-### Create the Vagrant File
+### 1_ Create the Vagrant File
+
 
 First we start with the "config" section in which we define that the base image is based on Ubuntu 14.04.
 
@@ -113,60 +123,32 @@ And I pull some Docker images to speed up deployment
 
 
 
-### Create the the Base Box
+### 2_ Create the the Base Box
 
-Create a directory for the project and copy the above code into a file called Vagrant finally run the vagrant boxScreen
-![My helpful screenshot]({{ site.url }}/assets/vagrant_Base_build.jpg)
+Create a directory for the project and copy the above code into a file called *Vagrant* and finally run *vagrant up*
 
+![terminal build](/assets/vagrant_Base_build.jpg)
 
 ```shell
 mkdir my_ucd_agent_base
-nano Vagrant
 cd my_ucd_agent_base
+nano Vagrant
+#Paste the File Content
 mkdir vagrant_data
 vagrant up
 ```
 
+   
+
 When done, we'll create a box image of the base
 
-```
+```shell
 vagrant package --output base_agent.box
-cd ..
-mkdir my_ucd_agent
-cd my_ucd_agent
-cp ../my_ucd_agent_base/base_agent.box .
-Building the IBM UrbanCode Deploy Agent Box
 ```
 
 sdfadfs
 
-```
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
 
-
-Vagrant.configure(2) do |config|
-    # Use the base box for speed
-    config.vm.box = "../1_BASE_BOX/package.box"
-   
-    config.vm.provider "virtualbox" do |vb|
-        # Customize the amount of memory on the VM:
-        vb.memory = "512"
-    end
-    
-    (1..3).each do |i|    
-        config.vm.define "agent#{i}" do |agent|
-            # Create a private network, which allows host-only access to the machine using a specific IP.
-            agent.vm.network "private_network", ip: "192.168.231.4#{i}"    #Creates agents in the 192.168.231.4x subnet
-            
-            # Share the agent installation file with the VM
-            agent.vm.synced_folder "./ucd_config", "/ucd_config"
-            agent.vm.provision :shell, :path => "./ucd_config/install.sh", :args => "'#{i}'"
-        end
-    end
-end
-
-```
 
 
 

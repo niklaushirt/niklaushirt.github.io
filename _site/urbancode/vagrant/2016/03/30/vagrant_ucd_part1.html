@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Easy UrbanCode Deploy with Vagrant (part 1)</title>
-  <meta name="description" content="This article describes my process of automatically creating deployment targets for an IBM UrbanCode Deploy environment.">
+  <meta name="description" content="">
 
   <link rel="stylesheet" href="/css/main.css">
   <link rel="canonical" href="http://nik.cloud/urbancode/vagrant/2016/03/30/vagrant_ucd_part1.html">
@@ -66,26 +66,34 @@
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <p>This article describes my process of automatically creating deployment targets for an IBM UrbanCode Deploy environment.</p>
+    <p><img src="/assets/vagrant_article_header.jpg" alt="header" /></p>
+
+<p>This article describes my process of automatically creating deployment targets for an IBM UrbanCode Deploy environment.</p>
+
+<p>All the sourcecode is freely available in my <a href="https://github.com/niklaushirt/UrbanCode_Vagrant" target="_blank">GitHub repository</a>.</p>
 
 <h2 id="prerequisites">Prerequisites</h2>
-<p>Vagrant must be <a href="https://www.vagrantup.com/docs/getting-started/index.html">installed on your local machine</a>. 
-It can be downloaded and installed from <a href="https://docs.vagrantup.com/v2/getting-started/index.html">here</a>.</p>
+<p>Vagrant must be <a href="https://www.vagrantup.com/docs/getting-started/index.html" target="_blank">installed on your local machine</a>. 
+It can be downloaded and installed from <a href="https://www.vagrantup.com/downloads.html" target="_blank">here</a>.</p>
 
 <h2 id="building-the-bases">Building the bases</h2>
 
 <p>In order to optimise performance, in this first article we will first build a base box image containing some basic stuff:</p>
 
 <ul>
-  <li>The IBM UrbanCode Deploy Agent installation files</li>
   <li>Java JRE</li>
+</ul>
+
+<p>And optional (to speed-up VM creation):</p>
+
+<ul>
   <li>Docker engine</li>
   <li>Docker compose</li>
   <li>NodeJS</li>
   <li>NPM</li>
 </ul>
 
-<h3 id="create-the-vagrant-file">Create the Vagrant File</h3>
+<h3 id="create-the-vagrant-file">1_ Create the Vagrant File</h3>
 
 <p>First we start with the “config” section in which we define that the base image is based on Ubuntu 14.04.</p>
 
@@ -169,14 +177,16 @@ It can be downloaded and installed from <a href="https://docs.vagrantup.com/v2/g
 </code></pre>
 </div>
 
-<h3 id="create-the-the-base-box">Create the the Base Box</h3>
+<h3 id="create-the-the-base-box">2_ Create the the Base Box</h3>
 
-<p>Create a directory for the project and copy the above code into a file called Vagrant finally run the vagrant boxScreen
-<img src="http://nik.cloud/assets/vagrant_Base_build.jpg" alt="My helpful screenshot" /></p>
+<p>Create a directory for the project and copy the above code into a file called <em>Vagrant</em> and finally run <em>vagrant up</em></p>
+
+<p><img src="/assets/vagrant_Base_build.jpg" alt="terminal build" /></p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>mkdir my_ucd_agent_base
-nano Vagrant
 <span class="nb">cd </span>my_ucd_agent_base
+nano Vagrant
+<span class="c">#Paste the File Content</span>
 mkdir vagrant_data
 vagrant up
 </code></pre>
@@ -185,43 +195,10 @@ vagrant up
 <p>When done, we’ll create a box image of the base</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>vagrant package --output base_agent.box
-cd ..
-mkdir my_ucd_agent
-cd my_ucd_agent
-cp ../my_ucd_agent_base/base_agent.box .
-Building the IBM UrbanCode Deploy Agent Box
 </code></pre>
 </div>
 
 <p>sdfadfs</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># -*- mode: ruby -*-
-# vi: set ft=ruby :
-
-
-Vagrant.configure(2) do |config|
-    # Use the base box for speed
-    config.vm.box = "../1_BASE_BOX/package.box"
-   
-    config.vm.provider "virtualbox" do |vb|
-        # Customize the amount of memory on the VM:
-        vb.memory = "512"
-    end
-    
-    (1..3).each do |i|    
-        config.vm.define "agent#{i}" do |agent|
-            # Create a private network, which allows host-only access to the machine using a specific IP.
-            agent.vm.network "private_network", ip: "192.168.231.4#{i}"    #Creates agents in the 192.168.231.4x subnet
-            
-            # Share the agent installation file with the VM
-            agent.vm.synced_folder "./ucd_config", "/ucd_config"
-            agent.vm.provision :shell, :path =&gt; "./ucd_config/install.sh", :args =&gt; "'#{i}'"
-        end
-    end
-end
-
-</code></pre>
-</div>
 
 
   </div>
