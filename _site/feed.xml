@@ -6,8 +6,8 @@
 </description>
     <link>http://nik.cloud/</link>
     <atom:link href="http://nik.cloud/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 30 Mar 2016 12:06:56 +0200</pubDate>
-    <lastBuildDate>Wed, 30 Mar 2016 12:06:56 +0200</lastBuildDate>
+    <pubDate>Wed, 30 Mar 2016 12:12:30 +0200</pubDate>
+    <lastBuildDate>Wed, 30 Mar 2016 12:12:30 +0200</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -127,15 +127,22 @@ It can be downloaded and installed from &lt;a href=&quot;https://www.vagrantup.c
 
 &lt;h3 id=&quot;create-the-the-base-box&quot;&gt;2_ Create the the Base Box&lt;/h3&gt;
 
-&lt;p&gt;Create a directory for the project and copy the above code into a file called &lt;em&gt;Vagrant&lt;/em&gt; and finally run &lt;em&gt;vagrant up&lt;/em&gt;&lt;/p&gt;
-
 &lt;p&gt;&lt;img src=&quot;/assets/vagrant_Base_build.jpg&quot; alt=&quot;terminal build&quot; /&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mkdir my_ucd_agent_base
-&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;my_ucd_agent_base
+&lt;p&gt;Create a directory for the project and copy the above code into a file called &lt;em&gt;Vagrant&lt;/em&gt; and finally run &lt;em&gt;vagrant up&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mkdir 1_BASE_BOX
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;1_BASE_BOX
 nano Vagrant
 &lt;span class=&quot;c&quot;&gt;#Paste the File Content&lt;/span&gt;
-mkdir vagrant_data
+vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;or download the code from GitHub&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone https://github.com/niklaushirt/UrbanCode_Vagrant.git
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;1_BASE_BOX
 vagrant up
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;

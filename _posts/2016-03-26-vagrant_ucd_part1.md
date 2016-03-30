@@ -125,19 +125,25 @@ And I pull some Docker images to speed up deployment
 
 ### 2_ Create the the Base Box
 
-Create a directory for the project and copy the above code into a file called *Vagrant* and finally run *vagrant up*
-
 ![terminal build](/assets/vagrant_Base_build.jpg)
 
+Create a directory for the project and copy the above code into a file called *Vagrant* and finally run *vagrant up*
+
 ```shell
-mkdir my_ucd_agent_base
-cd my_ucd_agent_base
+mkdir 1_BASE_BOX
+cd 1_BASE_BOX
 nano Vagrant
 #Paste the File Content
-mkdir vagrant_data
 vagrant up
 ```
 
+or download the code from GitHub
+
+```shell
+git clone https://github.com/niklaushirt/UrbanCode_Vagrant.git
+cd 1_BASE_BOX
+vagrant up
+```
    
 
 When done, we'll create a box image of the base

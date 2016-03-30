@@ -181,15 +181,22 @@ It can be downloaded and installed from <a href="https://www.vagrantup.com/downl
 
 <h3 id="create-the-the-base-box">2_ Create the the Base Box</h3>
 
-<p>Create a directory for the project and copy the above code into a file called <em>Vagrant</em> and finally run <em>vagrant up</em></p>
-
 <p><img src="/assets/vagrant_Base_build.jpg" alt="terminal build" /></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>mkdir my_ucd_agent_base
-<span class="nb">cd </span>my_ucd_agent_base
+<p>Create a directory for the project and copy the above code into a file called <em>Vagrant</em> and finally run <em>vagrant up</em></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mkdir 1_BASE_BOX
+<span class="nb">cd </span>1_BASE_BOX
 nano Vagrant
 <span class="c">#Paste the File Content</span>
-mkdir vagrant_data
+vagrant up
+</code></pre>
+</div>
+
+<p>or download the code from GitHub</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git clone https://github.com/niklaushirt/UrbanCode_Vagrant.git
+<span class="nb">cd </span>1_BASE_BOX
 vagrant up
 </code></pre>
 </div>
