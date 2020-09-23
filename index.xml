@@ -122,7 +122,7 @@ kubectl apply -f ~/training/istio/samples/bookinfo/networking/fault-injection-de
     </item>
     
     <item>
-      <title>Lab Preparation</title>
+      <title>Lab Information and Semantics</title>
       <link>http://niklaushirt.github.io/jtc00/lab2/</link>
       <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
       
