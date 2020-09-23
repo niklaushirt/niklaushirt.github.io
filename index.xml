@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Lab information on Kubernetes Training</title>
+    <title>Welcome to the Kubernetes Course on Kubernetes Training</title>
     <link>http://niklaushirt.github.io/</link>
-    <description>Recent content in Lab information on Kubernetes Training</description>
+    <description>Recent content in Welcome to the Kubernetes Course on Kubernetes Training</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 23 Sep 2020 09:12:06 +0200</lastBuildDate>
     
 	<atom:link href="http://niklaushirt.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Getting set up</title>
+      <link>http://niklaushirt.github.io/jtc00/lab1/</link>
+      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
+      
+      <guid>http://niklaushirt.github.io/jtc00/lab1/</guid>
+      <description>Prerequisites for the Lab Before we dive into the Labs, you need to be able to run the provided Lab VM. It contains a Minikube cluster and all the configurations for the subsequent labs.
+ Internet Access PC with at least:  4 Core CPU 8GB of RAM / 16GB recommended (16GB needed for the Istio Lab) 40GB of free Disk Space    Part 1 - Install Hypervisor Before we dive into the Labs, you need to be able to run the provided Lab VM.</description>
+    </item>
     
     <item>
       <title>Lab 1: Get to know ISTIO</title>
@@ -112,6 +122,17 @@ kubectl apply -f ~/training/istio/samples/bookinfo/networking/fault-injection-de
     </item>
     
     <item>
+      <title>Lab Preparation</title>
+      <link>http://niklaushirt.github.io/jtc00/lab2/</link>
+      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
+      
+      <guid>http://niklaushirt.github.io/jtc00/lab2/</guid>
+      <description>Nomenclatures  Shell Commands The commands that you are going to execute to progress the Labs will look like this:
+THIS IS AN EXAMPLE - DO NOT EXECUTE THIS!
+kubectl create -f redis-slave-service.yaml # THIS IS AN EXAMPLE - DO NOT EXECUTE THIS! &amp;gt; Output Line 1 &amp;gt; Output Line 2 &amp;gt; Output Line 3 ...  IMPORTANT NOTE: The example output of a command is prefixed by &amp;ldquo;&amp;gt;&amp;rdquo; in order to make it more distinguishable.</description>
+    </item>
+    
+    <item>
       <title>Lab 10: Cleanup</title>
       <link>http://niklaushirt.github.io/jtc10/lab10/</link>
       <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
@@ -148,16 +169,6 @@ RELEASE_VERSION=v0.19.0 curl -LO https://github.com/operator-framework/operator-
     </item>
     
     <item>
-      <title>Lab 1. Get to know Kubernetes</title>
-      <link>http://niklaushirt.github.io/jtc02/lab1/</link>
-      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc02/lab1/</guid>
-      <description>Kubernetes was developed by Google as part of the Borg project and handed off to the open source community in 2015. Kubernetes combines more than 15 years of Google research in running a containerized infrastructure with production work loads, open source contributions, and Docker container management tools to provide an isolated and secure app platform that is portable, extensible, and self-healing in case of failovers.
-Kubernetes is a solution that automates the orchestration of Container workloads.</description>
-    </item>
-    
-    <item>
       <title>Lab 1: Get to know Docker</title>
       <link>http://niklaushirt.github.io/jtc01/lab1/</link>
       <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
@@ -166,6 +177,16 @@ Kubernetes is a solution that automates the orchestration of Container workloads
       <description>Docker is an open platform for developing, shipping, and running applications.
 Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.
 Docker provides the ability to package and run an application in a loosely isolated environment called a container.</description>
+    </item>
+    
+    <item>
+      <title>Lab 1: Get to know Kubernetes</title>
+      <link>http://niklaushirt.github.io/jtc02/lab1/</link>
+      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
+      
+      <guid>http://niklaushirt.github.io/jtc02/lab1/</guid>
+      <description>Kubernetes was developed by Google as part of the Borg project and handed off to the open source community in 2015. Kubernetes combines more than 15 years of Google research in running a containerized infrastructure with production work loads, open source contributions, and Docker container management tools to provide an isolated and secure app platform that is portable, extensible, and self-healing in case of failovers.
+Kubernetes is a solution that automates the orchestration of Container workloads.</description>
     </item>
     
     <item>
@@ -222,17 +243,6 @@ Secure your cluster by granting privileged operations (accessing secrets, for ex
     </item>
     
     <item>
-      <title>Lab 2. Deploy your first Pod</title>
-      <link>http://niklaushirt.github.io/jtc02/lab2/</link>
-      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc02/lab2/</guid>
-      <description>Introduction You will learn what a pod is, deploy your first container, configure Kubernetes, and interact with Kubernetes in the command line.
-The base elements of Kubernetes are pods. Kubernetes will choose how and where to run them. You can also see a Pod as an object that requests some CPU and RAM. Kubernetes will take those requirements and decide where to run them.
-APod can be killed and restarted whenever the system has/wants to.</description>
-    </item>
-    
-    <item>
       <title>Lab 2: Create the Lab Operator Project</title>
       <link>http://niklaushirt.github.io/jtc14/lab2/</link>
       <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
@@ -243,6 +253,17 @@ APod can be killed and restarted whenever the system has/wants to.</description>
 cd mkdir ansible-operator cd ~/ansible-operator ``
   Create the ansible-operator-frontend Project
 operator-sdk new ansible-operator-frontend --type=ansible --api-version=ansiblelab.ibm.com/v1beta1 --kind=MyAnsibleLabDemo &amp;gt; INFO[0000] Creating new Ansible operator &amp;#39;ansible-operator-frontend&amp;#39;. &amp;gt; INFO[0000] Created deploy/service_account.yaml &amp;gt; INFO[0000] Created deploy/role.yaml &amp;gt; INFO[0000] Created deploy/role_binding.yaml &amp;gt; INFO[0000] Created deploy/crds/lab_v1beta1_MyAnsibleLabDemo_crd.</description>
+    </item>
+    
+    <item>
+      <title>Lab 2: Deploy your first Pod</title>
+      <link>http://niklaushirt.github.io/jtc02/lab2/</link>
+      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
+      
+      <guid>http://niklaushirt.github.io/jtc02/lab2/</guid>
+      <description>Introduction You will learn what a pod is, deploy your first container, configure Kubernetes, and interact with Kubernetes in the command line.
+The base elements of Kubernetes are pods. Kubernetes will choose how and where to run them. You can also see a Pod as an object that requests some CPU and RAM. Kubernetes will take those requirements and decide where to run them.
+APod can be killed and restarted whenever the system has/wants to.</description>
     </item>
     
     <item>
@@ -294,19 +315,6 @@ kubectl apply -f ~/training/rbac/service-accounts.yaml &amp;gt; serviceaccount &
     </item>
     
     <item>
-      <title>Lab 3. Deploy your first application</title>
-      <link>http://niklaushirt.github.io/jtc02/lab3/</link>
-      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc02/lab3/</guid>
-      <description>Learn how to deploy an application to a Kubernetes cluster.
-Once your client is configured, you are ready to deploy your first application, k8sdemo.
-The frontend example application In this part of the lab we will deploy an application called k8sdemo that has already been built and uploaded to DockerHub under the name niklaushirt/k8sdemo.
-We will use the following yaml:
-kind: Deployment metadata: name: k8sdemo namespace: default spec: replicas: 1 template: metadata: labels: app: k8sdemo spec: containers: - name: k8sdemo image: niklaushirt/k8sdemo:1.</description>
-    </item>
-    
-    <item>
       <title>Lab 3: Deploy the Lab Operator</title>
       <link>http://niklaushirt.github.io/jtc14/lab3/</link>
       <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
@@ -318,6 +326,19 @@ From the resource that we defined earlier:
 apiVersion: ansiblelab.ibm.com/v1beta1 kind: MyAnsibleLabDemo metadata: name: example-MyAnsibleLabDemo spec: # Add fields here size: 3 demo: image: niklaushirt/k8sdemo:1.0.0 ``
   Check that the CustomResource is running
 kubectl get pods &amp;gt; NAME READY STATUS RESTARTS AGE &amp;gt; ansible-operator-frontend-fd78bcf5-zxgws 2/2 Running 0 3m11s &amp;gt; k8sdemo-7fc8554dff-2krkz 1/1 Running 0 45s ``</description>
+    </item>
+    
+    <item>
+      <title>Lab 3: Deploy your first application</title>
+      <link>http://niklaushirt.github.io/jtc02/lab3/</link>
+      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
+      
+      <guid>http://niklaushirt.github.io/jtc02/lab3/</guid>
+      <description>Learn how to deploy an application to a Kubernetes cluster.
+Once your client is configured, you are ready to deploy your first application, k8sdemo.
+The frontend example application In this part of the lab we will deploy an application called k8sdemo that has already been built and uploaded to DockerHub under the name niklaushirt/k8sdemo.
+We will use the following yaml:
+kind: Deployment metadata: name: k8sdemo namespace: default spec: replicas: 1 template: metadata: labels: app: k8sdemo spec: containers: - name: k8sdemo image: niklaushirt/k8sdemo:1.</description>
     </item>
     
     <item>
@@ -462,69 +483,6 @@ kubectl delete -f ~/training/deployment/demoapp.yaml kubectl delete -f ~/trainin
     
     <item>
       <title>xxxx</title>
-      <link>http://niklaushirt.github.io/jtc19/lab2/</link>
-      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc19/lab2/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>xxxx</title>
-      <link>http://niklaushirt.github.io/jtc19/lab3/</link>
-      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc19/lab3/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>xxxx</title>
-      <link>http://niklaushirt.github.io/jtc19/lab4/</link>
-      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc19/lab4/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>xxxx</title>
-      <link>http://niklaushirt.github.io/jtc19/lab6/</link>
-      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc19/lab6/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>xxxx</title>
-      <link>http://niklaushirt.github.io/jtc19/lab7/</link>
-      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc19/lab7/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>xxxx</title>
-      <link>http://niklaushirt.github.io/jtc19/lab8/</link>
-      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc19/lab8/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>xxxx</title>
-      <link>http://niklaushirt.github.io/jtc19/lab9/</link>
-      <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc19/lab9/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>xxxx</title>
       <link>http://niklaushirt.github.io/lab/</link>
       <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
       
@@ -539,16 +497,6 @@ kubectl delete -f ~/training/deployment/demoapp.yaml kubectl delete -f ~/trainin
       
       <guid>http://niklaushirt.github.io/images/estet/</guid>
       <description></description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>http://niklaushirt.github.io/jtc02/stuff/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc02/stuff/</guid>
-      <description>Lab 5: Stateful Deployments As you know a Pod is mortal, meaning it can be destroyed by Kubernetes anytime, and with it it&amp;rsquo;s local data, memory, etc. So it&amp;rsquo;s perfect for stateless applications. Of course, in the real world we need a way to store our data, and we need this data to be persistent in time.
-So let&amp;rsquo;s have a look on how how can we deploy a stateful application with a persistent storage in Kubernetes?</description>
     </item>
     
   </channel>

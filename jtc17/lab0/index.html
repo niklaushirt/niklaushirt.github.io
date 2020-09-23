@@ -61,10 +61,24 @@
                 <input class="form-control mr-sm-2 w-100" data-search-input id="search-by" type="text" placeholder="Search">
             </form>
          <ul class="navbar-nav flex-column pt-3">
-    <li data-nav-id="/labpreparation/" class="nav-item my-1
+    <li data-nav-id="/jtc00/" class="nav-item my-1 haschildren
         ">
         
-        <a class="nav-link p-0" href="/labpreparation/"><h6>Lab Preparation</h6></a>
+        <a class="nav-link p-0" href="/jtc00/"><h6>Introduction</h6></a>
+        <ul class="list-unstyled ml-2">
+        <li data-nav-id="/jtc00/lab1/" class="nav-item my-1">
+                
+                 <a href="/jtc00/lab1/" class="nav-link p-0">
+                    Getting set up
+                </a>
+        </li>
+        <li data-nav-id="/jtc00/lab2/" class="nav-item my-1">
+                
+                 <a href="/jtc00/lab2/" class="nav-link p-0">
+                    Lab Preparation
+                </a>
+        </li>
+        </ul>
     </li>
     <li data-nav-id="/jtc01/" class="nav-item my-1 haschildren
         ">
@@ -105,19 +119,19 @@
         <li data-nav-id="/jtc02/lab1/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab1/" class="nav-link p-0">
-                    Lab 1. Get to know Kubernetes
+                    Lab 1: Get to know Kubernetes
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab2/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab2/" class="nav-link p-0">
-                    Lab 2. Deploy your first Pod
+                    Lab 2: Deploy your first Pod
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab3/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab3/" class="nav-link p-0">
-                    Lab 3. Deploy your first application
+                    Lab 3: Deploy your first application
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab4/" class="nav-item my-1">
@@ -136,12 +150,6 @@
                 
                  <a href="/jtc02/lab6/" class="nav-link p-0">
                     Lab 6: Cleanup
-                </a>
-        </li>
-        <li data-nav-id="/jtc02/stuff/" class="nav-item my-1">
-                
-                 <a href="/jtc02/stuff/" class="nav-link p-0">
-                    
                 </a>
         </li>
         </ul>
@@ -360,48 +368,6 @@
                     Lab 5: Cleanup
                 </a>
         </li>
-        <li data-nav-id="/jtc19/lab2/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab2/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab3/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab3/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab4/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab4/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab6/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab6/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab7/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab7/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab8/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab8/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab9/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab9/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
         </ul>
     </li>
         </ul>
@@ -444,12 +410,12 @@ kubectl create -f ~/training/deployment/demoapp-backend-service.yaml
 </li>
 <li>
 <p>Open the demo application in the browser</p>
-<p><img src="./images/vm.png" alt=""> <strong>Training VM</strong></p>
+<p><img src="../images/vm.png" alt=""> <strong>Training VM</strong></p>
 <p>If you are using the training VM, you can open the webpage directly by typing:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">minikube service k8sdemo-service
 </code></pre></div><p>where k8sdemo-service is the name of the exposed kubernetes service.</p>
 <hr>
-<p><img src="./images/cloud.png" alt=""> <strong>Cloud/Standalone</strong></p>
+<p><img src="../images/cloud.png" alt=""> <strong>Cloud/Standalone</strong></p>
 <p>If you are <strong>NOT</strong> using the training VM, you can open the webpage by typing:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward --namespace default <span style="color:#66d9ef">$(</span>kubectl get po -n default -l app<span style="color:#f92672">=</span>k8sdemo | grep k8sdemo | <span style="color:#ae81ff">\a</span>wk <span style="color:#e6db74">&#39;{print $1;}&#39;</span><span style="color:#66d9ef">)</span> 3000:3000
 </code></pre></div><p>And then navigating to <a href="http://localhost:3000/">http://localhost:3000/</a> in your browser.</p>

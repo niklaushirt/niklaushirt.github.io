@@ -4,11 +4,11 @@
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://niklaushirt.github.io/images/">
+    <link rel="canonical" href="http://niklaushirt.github.io/jtc00/">
 
     <title>
         
-        IMAGES | Kubernetes Training
+        Introduction | Kubernetes Training
         
     </title>
 
@@ -61,7 +61,7 @@
                 <input class="form-control mr-sm-2 w-100" data-search-input id="search-by" type="text" placeholder="Search">
             </form>
          <ul class="navbar-nav flex-column pt-3">
-    <li data-nav-id="/jtc00/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc00/" class="nav-item my-1 parent active haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc00/"><h6>Introduction</h6></a>
@@ -377,14 +377,88 @@
 
 </div>
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
-	<nav id="TableOfContents"></nav>
+	<nav id="TableOfContents">
+  <ul>
+    <li><a href="#nomenclatures">Nomenclatures</a>
+      <ul>
+        <li><a href="#shell-commands">Shell Commands</a></li>
+        <li><a href="#code-examples">Code Examples</a></li>
+        <li><a href="#training-vm-vs-cloudstandalone">Training VM vs Cloud/Standalone</a></li>
+      </ul>
+    </li>
+    <li><a href="#prepare-the-lab-environment">Prepare the Lab environment</a>
+      <ul>
+        <li><a href="#using-the-provided-lab-vm">Using the provided Lab VM</a></li>
+        <li><a href="#using-your-own-environment">Using your own environment</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
 
-<h1>IMAGES</h1>
+<h1>Introduction</h1>
 
+<h2 id="nomenclatures">Nomenclatures</h2>
+<hr>
+<h3 id="shell-commands">Shell Commands</h3>
+<p>The commands that you are going to execute to progress the Labs will look like this:</p>
+<p>THIS IS AN EXAMPLE - DO NOT EXECUTE THIS!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">   kubectl create -f redis-slave-service.yaml
+	
+	&gt; Output Line <span style="color:#ae81ff">1</span>     
+	&gt; Output Line <span style="color:#ae81ff">2</span>
+	&gt; Output Line <span style="color:#ae81ff">3</span>
+	...
+	
+</code></pre></div><blockquote>
+<p><strong>IMPORTANT NOTE:</strong> The example output of a command is prefixed by &ldquo;&gt;&rdquo; in order to make it more distinguishable.</p>
+<p>So in the above example you would only enter/copy-paste <code>kubectl create -f redis-slave-service.yaml</code> and the output from the command is &ldquo;Output Line 1&rdquo; to &ldquo;Output Line 3&rdquo;</p>
+</blockquote>
+<hr>
+<h3 id="code-examples">Code Examples</h3>
+<p>Code examples are presented like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">apiVersion</span>: lab.ibm.com/v1beta1
+<span style="color:#66d9ef">kind</span>: MyResource
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: example
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">size</span>: <span style="color:#ae81ff">3</span>
+  <span style="color:#66d9ef">image</span>: busybox
+</code></pre></div><p>This is only for illustration and is not being actively used in the Labs.</p>
+<h3 id="training-vm-vs-cloudstandalone">Training VM vs Cloud/Standalone</h3>
+<p>Whenever the instructions differ between the provided Training VM and a Cloud/Standalone installation it will be marked as follows:</p>
+<p>Instructions if you are using the training VM</p>
+<blockquote>
+<p><img src="./images/vm.png" alt=""> <strong>Training VM</strong></p>
+</blockquote>
+<p>Instructions if you are <strong>NOT</strong> using the training VM</p>
+<blockquote>
+<p><img src="./images/cloud.png" alt=""> <strong>Cloud/Standalone</strong></p>
+</blockquote>
+<p>Please use the instructions accordingly.</p>
+<h2 id="prepare-the-lab-environment">Prepare the Lab environment</h2>
+<h3 id="using-the-provided-lab-vm">Using the provided Lab VM</h3>
+<p>Using the provided Lab VM is the easiest way to get started with the Labs for the training:</p>
+<ul>
+<li>Download the Lab VM</li>
+<li>Install a Hypervisor on your PC (VMWare, VirtualBox, KVM, &hellip;)</li>
+<li>Start the VM</li>
+<li>Test that it works in your setting</li>
+</ul>
+<p>You can find detailed instructions here:
+<a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
+<h3 id="using-your-own-environment">Using your own environment</h3>
+<p>These are two methods to perform the Labs without downloading and starting the VM.</p>
+<p><img src="./images/important.png" alt=""> This is <strong>untested</strong> and I cannot guarantee that all the Labs will be working 100%.</p>
+<h4 id="standalone-installation">Standalone installation</h4>
+<p>For installation on your local PC</p>
+<p><a href="https://github.com/niklaushirt/training/blob/master/standalone/README-STANDALONE.md">https://github.com/niklaushirt/training/blob/master/standalone/README-STANDALONE.md</a></p>
+<h4 id="cloud-installation">Cloud Installation</h4>
+<p>For using a Kubernetes cluster on the IBM Cloud</p>
+<p><a href="https://github.com/niklaushirt/training/blob/master/standalone/README-CLOUD.md">https://github.com/niklaushirt/training/blob/master/standalone/README-CLOUD.md</a></p>
 
 
     
@@ -396,7 +470,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc00/" title="Introduction">Introduction<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/" title="Welcome to the Kubernetes Course"><i class="fas fa-chevron-left p-1"></i>Welcome to the Kubernetes Course</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc00/lab1/" title="Getting set up">Getting set up<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

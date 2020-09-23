@@ -3,6 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://niklaushirt.github.io/jtc00/lab1/</loc>
+    <lastmod>2020-09-23T09:12:06+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://niklaushirt.github.io/jtc00/</loc>
+    <lastmod>2020-09-23T09:12:06+02:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://niklaushirt.github.io/jtc10/lab1/</loc>
     <lastmod>2020-09-23T09:12:06+02:00</lastmod>
   </url>
@@ -48,7 +58,7 @@
   </url>
   
   <url>
-    <loc>http://niklaushirt.github.io/labpreparation/</loc>
+    <loc>http://niklaushirt.github.io/jtc00/lab2/</loc>
     <lastmod>2020-09-23T09:12:06+02:00</lastmod>
   </url>
   
@@ -113,12 +123,12 @@
   </url>
   
   <url>
-    <loc>http://niklaushirt.github.io/jtc02/lab1/</loc>
+    <loc>http://niklaushirt.github.io/jtc01/lab1/</loc>
     <lastmod>2020-09-23T09:12:06+02:00</lastmod>
   </url>
   
   <url>
-    <loc>http://niklaushirt.github.io/jtc01/lab1/</loc>
+    <loc>http://niklaushirt.github.io/jtc02/lab1/</loc>
     <lastmod>2020-09-23T09:12:06+02:00</lastmod>
   </url>
   
@@ -148,12 +158,12 @@
   </url>
   
   <url>
-    <loc>http://niklaushirt.github.io/jtc02/lab2/</loc>
+    <loc>http://niklaushirt.github.io/jtc14/lab2/</loc>
     <lastmod>2020-09-23T09:12:06+02:00</lastmod>
   </url>
   
   <url>
-    <loc>http://niklaushirt.github.io/jtc14/lab2/</loc>
+    <loc>http://niklaushirt.github.io/jtc02/lab2/</loc>
     <lastmod>2020-09-23T09:12:06+02:00</lastmod>
   </url>
   
@@ -178,12 +188,12 @@
   </url>
   
   <url>
-    <loc>http://niklaushirt.github.io/jtc02/lab3/</loc>
+    <loc>http://niklaushirt.github.io/jtc14/lab3/</loc>
     <lastmod>2020-09-23T09:12:06+02:00</lastmod>
   </url>
   
   <url>
-    <loc>http://niklaushirt.github.io/jtc14/lab3/</loc>
+    <loc>http://niklaushirt.github.io/jtc02/lab3/</loc>
     <lastmod>2020-09-23T09:12:06+02:00</lastmod>
   </url>
   
@@ -253,51 +263,12 @@
   </url>
   
   <url>
-    <loc>http://niklaushirt.github.io/jtc19/lab2/</loc>
-    <lastmod>2020-09-23T09:12:06+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://niklaushirt.github.io/jtc19/lab3/</loc>
-    <lastmod>2020-09-23T09:12:06+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://niklaushirt.github.io/jtc19/lab4/</loc>
-    <lastmod>2020-09-23T09:12:06+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://niklaushirt.github.io/jtc19/lab6/</loc>
-    <lastmod>2020-09-23T09:12:06+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://niklaushirt.github.io/jtc19/lab7/</loc>
-    <lastmod>2020-09-23T09:12:06+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://niklaushirt.github.io/jtc19/lab8/</loc>
-    <lastmod>2020-09-23T09:12:06+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://niklaushirt.github.io/jtc19/lab9/</loc>
-    <lastmod>2020-09-23T09:12:06+02:00</lastmod>
-  </url>
-  
-  <url>
     <loc>http://niklaushirt.github.io/lab/</loc>
     <lastmod>2020-09-23T09:12:06+02:00</lastmod>
   </url>
   
   <url>
     <loc>http://niklaushirt.github.io/images/estet/</loc>
-  </url>
-  
-  <url>
-    <loc>http://niklaushirt.github.io/jtc02/stuff/</loc>
   </url>
   
   <url>

@@ -61,10 +61,24 @@
                 <input class="form-control mr-sm-2 w-100" data-search-input id="search-by" type="text" placeholder="Search">
             </form>
          <ul class="navbar-nav flex-column pt-3">
-    <li data-nav-id="/labpreparation/" class="nav-item my-1
+    <li data-nav-id="/jtc00/" class="nav-item my-1 haschildren
         ">
         
-        <a class="nav-link p-0" href="/labpreparation/"><h6>Lab Preparation</h6></a>
+        <a class="nav-link p-0" href="/jtc00/"><h6>Introduction</h6></a>
+        <ul class="list-unstyled ml-2">
+        <li data-nav-id="/jtc00/lab1/" class="nav-item my-1">
+                
+                 <a href="/jtc00/lab1/" class="nav-link p-0">
+                    Getting set up
+                </a>
+        </li>
+        <li data-nav-id="/jtc00/lab2/" class="nav-item my-1">
+                
+                 <a href="/jtc00/lab2/" class="nav-link p-0">
+                    Lab Preparation
+                </a>
+        </li>
+        </ul>
     </li>
     <li data-nav-id="/jtc01/" class="nav-item my-1 haschildren
         ">
@@ -105,19 +119,19 @@
         <li data-nav-id="/jtc02/lab1/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab1/" class="nav-link p-0">
-                    Lab 1. Get to know Kubernetes
+                    Lab 1: Get to know Kubernetes
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab2/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab2/" class="nav-link p-0">
-                    Lab 2. Deploy your first Pod
+                    Lab 2: Deploy your first Pod
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab3/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab3/" class="nav-link p-0">
-                    Lab 3. Deploy your first application
+                    Lab 3: Deploy your first application
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab4/" class="nav-item my-1">
@@ -136,12 +150,6 @@
                 
                  <a href="/jtc02/lab6/" class="nav-link p-0">
                     Lab 6: Cleanup
-                </a>
-        </li>
-        <li data-nav-id="/jtc02/stuff/" class="nav-item my-1">
-                
-                 <a href="/jtc02/stuff/" class="nav-link p-0">
-                    
                 </a>
         </li>
         </ul>
@@ -360,48 +368,6 @@
                     Lab 5: Cleanup
                 </a>
         </li>
-        <li data-nav-id="/jtc19/lab2/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab2/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab3/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab3/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab4/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab4/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab6/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab6/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab7/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab7/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab8/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab8/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab9/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab9/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
         </ul>
     </li>
         </ul>
@@ -441,7 +407,7 @@ Previously this knowledge only resided in the minds of administrators, various c
 <p>Operators implement and <strong>automate common Day-1</strong> (installation, configuration, etc) <strong>and Day-2</strong> (re-configuration, update, backup, failover, restore, etc.) <strong>activities</strong> in a piece of software running inside your Kubernetes cluster, by integrating natively with Kubernetes concepts and APIs.</p>
 </li>
 </ul>
-<p><img src="./images/op1.png" alt=""></p>
+<p><img src="../images/op1.png" alt=""></p>
 <p>Operators extend Kubernetes by allowing you to define a <strong>Custom Controller</strong> to watch your application and perform custom tasks based on its state (a perfect fit to automate maintenance of the stateful application we described above).</p>
 <p>The application you want to watch is defined in Kubernetes as a new object: a <strong>Custom Resource</strong> (CR) that has its own yaml spec and object type (in K8s, a kind) that is understood by the API server.</p>
 <p>That way, you can define any specific criteria in the custom spec to watch out for, and reconcile the instance when it doesn’t match the spec. The way an operator’s controller reconciles against a spec is very similar to native Kubernetes’ controllers, though it is using mostly custom components.</p>

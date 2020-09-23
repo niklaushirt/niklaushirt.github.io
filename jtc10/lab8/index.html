@@ -61,10 +61,24 @@
                 <input class="form-control mr-sm-2 w-100" data-search-input id="search-by" type="text" placeholder="Search">
             </form>
          <ul class="navbar-nav flex-column pt-3">
-    <li data-nav-id="/labpreparation/" class="nav-item my-1
+    <li data-nav-id="/jtc00/" class="nav-item my-1 haschildren
         ">
         
-        <a class="nav-link p-0" href="/labpreparation/"><h6>Lab Preparation</h6></a>
+        <a class="nav-link p-0" href="/jtc00/"><h6>Introduction</h6></a>
+        <ul class="list-unstyled ml-2">
+        <li data-nav-id="/jtc00/lab1/" class="nav-item my-1">
+                
+                 <a href="/jtc00/lab1/" class="nav-link p-0">
+                    Getting set up
+                </a>
+        </li>
+        <li data-nav-id="/jtc00/lab2/" class="nav-item my-1">
+                
+                 <a href="/jtc00/lab2/" class="nav-link p-0">
+                    Lab Preparation
+                </a>
+        </li>
+        </ul>
     </li>
     <li data-nav-id="/jtc01/" class="nav-item my-1 haschildren
         ">
@@ -105,19 +119,19 @@
         <li data-nav-id="/jtc02/lab1/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab1/" class="nav-link p-0">
-                    Lab 1. Get to know Kubernetes
+                    Lab 1: Get to know Kubernetes
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab2/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab2/" class="nav-link p-0">
-                    Lab 2. Deploy your first Pod
+                    Lab 2: Deploy your first Pod
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab3/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab3/" class="nav-link p-0">
-                    Lab 3. Deploy your first application
+                    Lab 3: Deploy your first application
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab4/" class="nav-item my-1">
@@ -136,12 +150,6 @@
                 
                  <a href="/jtc02/lab6/" class="nav-link p-0">
                     Lab 6: Cleanup
-                </a>
-        </li>
-        <li data-nav-id="/jtc02/stuff/" class="nav-item my-1">
-                
-                 <a href="/jtc02/stuff/" class="nav-link p-0">
-                    
                 </a>
         </li>
         </ul>
@@ -360,48 +368,6 @@
                     Lab 5: Cleanup
                 </a>
         </li>
-        <li data-nav-id="/jtc19/lab2/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab2/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab3/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab3/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab4/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab4/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab6/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab6/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab7/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab7/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab8/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab8/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab9/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab9/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
         </ul>
     </li>
         </ul>
@@ -444,8 +410,8 @@
     - <span style="color:#66d9ef">destination</span>:
         <span style="color:#66d9ef">host</span>: reviews
         <span style="color:#66d9ef">subset</span>: v1
-</code></pre></div><p>``
-Run the following:</p>
+</code></pre></div><p>``</p>
+<p>Run the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f ~/training/istio/samples/bookinfo/networking/virtual-service-all-v1.yaml
  
 &gt; virtualservice.networking.istio.io/reviews configured
@@ -470,8 +436,8 @@ Run the following:</p>
       <span style="color:#66d9ef">host</span>: nginx
       <span style="color:#66d9ef">subset</span>: v2
 <span style="color:#66d9ef">mirror_percent</span>: <span style="color:#ae81ff">100</span>
-</code></pre></div><p>``
-Run the following:</p>
+</code></pre></div><p>``</p>
+<p>Run the following:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f ~/training/istio/samples/bookinfo/networking/virtual-service-mirror-v1-v2.yaml
  
 &gt; virtualservice.networking.istio.io/reviews configured
@@ -480,7 +446,7 @@ Run the following:</p>
 </li>
 </ol>
 <p>After a short while you should see traffic starting to flow from <code>reviews</code> (v2) to <code>ratings</code>, because <code>reviews</code> (v2) is receiving the mirrored traffic.</p>
-<p><img src="./images/istio0.png" alt=""></p>
+<p><img src="../images/istio0.png" alt=""></p>
 
 
     

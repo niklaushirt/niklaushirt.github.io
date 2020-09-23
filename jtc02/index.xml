@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>Lab 1. Get to know Kubernetes</title>
+      <title>Lab 1: Get to know Kubernetes</title>
       <link>http://niklaushirt.github.io/jtc02/lab1/</link>
       <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
       
@@ -22,7 +22,7 @@ Kubernetes is a solution that automates the orchestration of Container workloads
     </item>
     
     <item>
-      <title>Lab 2. Deploy your first Pod</title>
+      <title>Lab 2: Deploy your first Pod</title>
       <link>http://niklaushirt.github.io/jtc02/lab2/</link>
       <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
       
@@ -33,7 +33,7 @@ APod can be killed and restarted whenever the system has/wants to.</description>
     </item>
     
     <item>
-      <title>Lab 3. Deploy your first application</title>
+      <title>Lab 3: Deploy your first application</title>
       <link>http://niklaushirt.github.io/jtc02/lab3/</link>
       <pubDate>Wed, 23 Sep 2020 09:12:06 +0200</pubDate>
       
@@ -76,16 +76,6 @@ So let&amp;rsquo;s have a look on how how can we deploy a stateful application w
   Delete the demo app and the mysql deployment
 kubectl delete -f ~/training/deployment/demoapp.yaml kubectl delete -f ~/training/deployment/demoapp-service.yaml kubectl delete -f ~/training/deployment/demoapp-backend.yaml kubectl delete -f ~/training/deployment/demoapp-backend-service.yaml kubectl delete -f ~/training/volumes/3-simple-mysql-deployment.yaml ``
   </description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>http://niklaushirt.github.io/jtc02/stuff/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://niklaushirt.github.io/jtc02/stuff/</guid>
-      <description>Lab 5: Stateful Deployments As you know a Pod is mortal, meaning it can be destroyed by Kubernetes anytime, and with it it&amp;rsquo;s local data, memory, etc. So it&amp;rsquo;s perfect for stateless applications. Of course, in the real world we need a way to store our data, and we need this data to be persistent in time.
-So let&amp;rsquo;s have a look on how how can we deploy a stateful application with a persistent storage in Kubernetes?</description>
     </item>
     
   </channel>

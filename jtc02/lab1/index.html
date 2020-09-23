@@ -8,7 +8,7 @@
 
     <title>
         
-        Lab 1. Get to know Kubernetes | Kubernetes Training
+        Lab 1: Get to know Kubernetes | Kubernetes Training
         
     </title>
 
@@ -61,10 +61,24 @@
                 <input class="form-control mr-sm-2 w-100" data-search-input id="search-by" type="text" placeholder="Search">
             </form>
          <ul class="navbar-nav flex-column pt-3">
-    <li data-nav-id="/labpreparation/" class="nav-item my-1
+    <li data-nav-id="/jtc00/" class="nav-item my-1 haschildren
         ">
         
-        <a class="nav-link p-0" href="/labpreparation/"><h6>Lab Preparation</h6></a>
+        <a class="nav-link p-0" href="/jtc00/"><h6>Introduction</h6></a>
+        <ul class="list-unstyled ml-2">
+        <li data-nav-id="/jtc00/lab1/" class="nav-item my-1">
+                
+                 <a href="/jtc00/lab1/" class="nav-link p-0">
+                    Getting set up
+                </a>
+        </li>
+        <li data-nav-id="/jtc00/lab2/" class="nav-item my-1">
+                
+                 <a href="/jtc00/lab2/" class="nav-link p-0">
+                    Lab Preparation
+                </a>
+        </li>
+        </ul>
     </li>
     <li data-nav-id="/jtc01/" class="nav-item my-1 haschildren
         ">
@@ -105,19 +119,19 @@
         <li data-nav-id="/jtc02/lab1/" class="nav-item my-1 active">
                 
                  <a href="/jtc02/lab1/" class="nav-link p-0">
-                    Lab 1. Get to know Kubernetes
+                    Lab 1: Get to know Kubernetes
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab2/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab2/" class="nav-link p-0">
-                    Lab 2. Deploy your first Pod
+                    Lab 2: Deploy your first Pod
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab3/" class="nav-item my-1">
                 
                  <a href="/jtc02/lab3/" class="nav-link p-0">
-                    Lab 3. Deploy your first application
+                    Lab 3: Deploy your first application
                 </a>
         </li>
         <li data-nav-id="/jtc02/lab4/" class="nav-item my-1">
@@ -136,12 +150,6 @@
                 
                  <a href="/jtc02/lab6/" class="nav-link p-0">
                     Lab 6: Cleanup
-                </a>
-        </li>
-        <li data-nav-id="/jtc02/stuff/" class="nav-item my-1">
-                
-                 <a href="/jtc02/stuff/" class="nav-link p-0">
-                    
                 </a>
         </li>
         </ul>
@@ -360,48 +368,6 @@
                     Lab 5: Cleanup
                 </a>
         </li>
-        <li data-nav-id="/jtc19/lab2/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab2/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab3/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab3/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab4/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab4/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab6/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab6/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab7/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab7/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab8/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab8/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
-        <li data-nav-id="/jtc19/lab9/" class="nav-item my-1">
-                
-                 <a href="/jtc19/lab9/" class="nav-link p-0">
-                    xxxx
-                </a>
-        </li>
         </ul>
     </li>
         </ul>
@@ -426,7 +392,7 @@
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
 
-<h1>Lab 1. Get to know Kubernetes</h1>
+<h1>Lab 1: Get to know Kubernetes</h1>
 
 <p>Kubernetes was developed by Google as part of the Borg project and handed off to the open source community in 2015. Kubernetes combines more than 15 years of Google research in running a containerized infrastructure with production work loads, open source contributions, and Docker container management tools to provide an isolated and secure app platform that is portable, extensible, and self-healing in case of failovers.</p>
 <p>Kubernetes is a solution that automates the orchestration of Container workloads.
@@ -440,7 +406,7 @@ There are a lot of different types of Resources but the most important ones that
 <li>Deployment - defines the deployment of a certain Container - creates a ReplicaSet</li>
 <li>Service - defines how to expose the Container on the network</li>
 </ul>
-<p><img src="./images/kube1.png" alt=""></p>
+<p><img src="../images/kube1.png" alt=""></p>
 <h3 id="deployment">Deployment</h3>
 <p>A Deployment provides declarative updates for Pods (and ReplicaSets).</p>
 <p>You describe a desired state in a Deployment, and the Deployment Controller changes the actual state to the desired state at a controlled rate. You can define Deployments to create new ReplicaSets, or to remove existing Deployments and adopt all their resources with new Deployments.</p>
@@ -459,7 +425,7 @@ There are a lot of different types of Resources but the most important ones that
           <span style="color:#66d9ef">image</span>: nginx:<span style="color:#ae81ff">1.7.9</span>
           <span style="color:#66d9ef">ports</span>:
           - <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">80</span>
-</code></pre></div><p><img src="./images/kube3.png" alt=""></p>
+</code></pre></div><p><img src="../images/kube3.png" alt=""></p>
 <p>This yaml file defines (amongst others):</p>
 <table>
 <thead>
@@ -506,7 +472,7 @@ There are a lot of different types of Resources but the most important ones that
     <span style="color:#66d9ef">protocol</span>: TCP
   <span style="color:#66d9ef">selector</span>:
     <span style="color:#66d9ef">app</span>: nginx
-</code></pre></div><p><img src="./images/kube5.png" alt=""></p>
+</code></pre></div><p><img src="../images/kube5.png" alt=""></p>
 <p>This yaml file defines (amongst others):</p>
 <table>
 <thead>
@@ -547,7 +513,7 @@ There are a lot of different types of Resources but the most important ones that
     <h4 class="text-white text-center">Read more</h4>
 
     <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc02/" title="JTC02 Kubernetes Labs"><i class="fas fa-chevron-left p-1"></i>JTC02 Kubernetes Labs</a>
-        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc02/lab2/" title="Lab 2. Deploy your first Pod">Lab 2. Deploy your first Pod<i class="fas fa-chevron-right p-1"></i></a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc02/lab2/" title="Lab 2: Deploy your first Pod">Lab 2: Deploy your first Pod<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 
