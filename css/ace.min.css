@@ -67,7 +67,7 @@ body {
   line-height: 1.5;
   color: #fbfdff;
   text-align: left;
-  background-color: #1a1a1a;
+  background-color: #10100e;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {
@@ -4845,7 +4845,7 @@ input[type=button].btn-block {
 }
 
 .navbar-light .navbar-nav .nav-link {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .navbar-light .navbar-nav .nav-link:hover,
