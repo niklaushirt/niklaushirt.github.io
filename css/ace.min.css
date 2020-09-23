@@ -4861,7 +4861,7 @@ input[type=button].btn-block {
 .navbar-light .navbar-nav .active>.nav-link,
 .navbar-light .navbar-nav .nav-link.show,
 .navbar-light .navbar-nav .nav-link.active {
-  color: rgba(0, 0, 0, .9)
+  color: rgba(255, 255, 255, 0.9)
 }
 
 .navbar-light .navbar-toggler {
@@ -6916,7 +6916,7 @@ a.close.disabled {
 }
 
 .bg-primary {
-  background-color: #007bff !important
+  background-color: #00000 !important
 }
 
 a.bg-primary:hover,
