@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc10/lab2/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 2: Installing Istio  | My New Hugo Site
         
     </title>
 
@@ -147,7 +146,7 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc10/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc10/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc10/"><h6>JTC10 Istio</h6></a>
@@ -158,7 +157,7 @@
                     Lab 1: Get to know ISTIO
                 </a>
         </li>
-        <li data-nav-id="/jtc10/lab2/" class="nav-item my-1">
+        <li data-nav-id="/jtc10/lab2/" class="nav-item my-1 active">
                 
                  <a href="/jtc10/lab2/" class="nav-link p-0">
                     Lab 2: Installing Istio 
@@ -412,42 +411,92 @@
 
 </div>
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
-	<nav id="TableOfContents">
-  <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
-  </ul>
-</nav>
+	<nav id="TableOfContents"></nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 2: Installing Istio </h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
-<ul>
-<li>In this Lab you will learn the basics of Docker:</li>
-</ul>
+<p>In this module, you download and install Istio.</p>
 <ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
-</ol>
+<li>
+<p>Execute the following command to get the latest ISTIO source:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd
 
+<span style="color:#75715e">#Linux (Lab VM)</span>
+wget https://github.com/istio/istio/releases/download/1.6.4/istio-1.6.4-linux-amd64.tar.gz
+tar xfvz istio-1.6.4-linux-amd64.tar.gz     
+    
+<span style="color:#75715e">#Mac</span>
+wget https://github.com/istio/istio/releases/download/1.6.4/istio-1.6.4-osx.tar.gz
+tar xfvz istio-1.6.4-osx.tar.gz
 	
+<span style="color:#75715e">#Windows</span>
+Download https://github.com/istio/istio/releases/download/1.6.4/istio-1.6.4-win.zip
+</code></pre></div></li>
+<li>
+<p>Add the <code>istioctl</code> client to your executables.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">export PATH<span style="color:#f92672">=</span>./istio-1.6.4/bin:$PATH
+
+</code></pre></div></li>
+<li>
+<p>Install Istio into the cluster:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl install --set profile<span style="color:#f92672">=</span>demo
+      
+&gt; Detected that your cluster does not support third party JWT authentication. Falling back to less secure first party JWT. See https://istio.io/docs/ops/best-practices/security/#configure-third-party-service-account-tokens <span style="color:#66d9ef">for</span> details.
+&gt; ✔ Istio core installed                                                                                                                                            
+&gt; - Processing resources <span style="color:#66d9ef">for</span> Istiod. Waiting <span style="color:#66d9ef">for</span> Deployment/istio-system/istiod 
+&gt; ...
+
+</code></pre></div></li>
+<li>
+<p>Label the default namespace for automatic sidecar injection</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl label namespace default istio-injection<span style="color:#f92672">=</span>enabled                                                                                   
+   
+&gt; namespace/default labeled
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Check the labels</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl get ns --show-labels                                                                                                              
+   
+&gt; NAME                   STATUS   AGE   LABELS
+&gt; default                Active   66d   istio-injection<span style="color:#f92672">=</span>enabled
+&gt; istio-system           Active   62s   istio-injection<span style="color:#f92672">=</span>disabled,istio-operator-managed<span style="color:#f92672">=</span>Reconcile,operator.istio.io/	&gt; component<span style="color:#f92672">=</span>Base,operator.istio.io/managed<span style="color:#f92672">=</span>Reconcile,operator.istio.io/version<span style="color:#f92672">=</span>1.4.0
+&gt; kube-node-lease        Active   66d   &lt;none&gt;
+&gt; kube-public            Active   66d   &lt;none&gt;
+&gt; kube-system            Active   66d   &lt;none&gt;
+&gt; kubernetes-dashboard   Active   66d   addonmanager.kubernetes.io/mode<span style="color:#f92672">=</span>Reconcile,kubernetes.io/minikube-addons<span style="color:#f92672">=</span>dashboard
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Ensure the corresponding pods are all in <strong><code>Running</code></strong> state before you continue.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl get pods -n istio-system
+   
+&gt; NAME                                    READY   STATUS    RESTARTS   AGE
+&gt; grafana-5dc4b4676c-dsdb5                1/1     Running   <span style="color:#ae81ff">0</span>          21m
+&gt; istio-egressgateway-5c7967cf9d-gnrpj    1/1     Running   <span style="color:#ae81ff">0</span>          21m
+&gt; istio-ingressgateway-676fbf789d-vldbf   1/1     Running   <span style="color:#ae81ff">0</span>          21m
+&gt; istio-tracing-8584b4d7f9-cj9p6          1/1     Running   <span style="color:#ae81ff">0</span>          21m
+&gt; istiod-55cd8455dd-4gq2j                 1/1     Running   <span style="color:#ae81ff">0</span>          23m
+&gt; kiali-6f457f5964-pvjw5                  1/1     Running   <span style="color:#ae81ff">0</span>          21m
+&gt; prometheus-7f54ff69cd-lf4xz             2/2     Running   <span style="color:#ae81ff">0</span>          21m
+</code></pre></div></li>
+<li>
+<p>Patch the NodePort of the Istio Ingress to 30762. Like that we are sure that the HTTP port is fixed and known.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl patch service -n istio-system istio-ingressgateway -p <span style="color:#e6db74">&#39;{&#34;spec&#34;: {&#34;ports&#34;: [{&#34;nodePort&#34;: 30762,&#34;port&#34;:80,&#34;name&#34;: &#34;http2&#34;}],&#34;type&#34;: &#34;NodePort&#34;}}&#39;</span>
+   
+ &gt; service/istio-ingressgateway patched
+</code></pre></div></li>
+</ol>
+<p>​
+Before you continue, make sure all the pods are deployed and are either in the <strong><code>Running</code></strong> or <strong><code>Completed</code></strong> state. If they&rsquo;re in <code>Pending</code> or <code>CrashLoopBackOff</code> state, wait a few minutes to let the deployment to settle.</p>
+<p><strong>Congratulations! You successfully installed Istio into your cluster.</strong></p>
+
+
+    
 
 
                     
@@ -456,7 +505,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc10/lab1/" title="Lab 1: Get to know ISTIO"><i class="fas fa-chevron-left p-1"></i>Lab 1: Get to know ISTIO</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc10/lab3/" title="Lab 3: Deploy BookInfo application ">Lab 3: Deploy BookInfo application <i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

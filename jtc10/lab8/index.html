@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc10/lab8/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 8: Traffic Mirroring | My New Hugo Site
         
     </title>
 
@@ -147,7 +146,7 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc10/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc10/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc10/"><h6>JTC10 Istio</h6></a>
@@ -194,7 +193,7 @@
                     Lab 7: End-user authentication
                 </a>
         </li>
-        <li data-nav-id="/jtc10/lab8/" class="nav-item my-1">
+        <li data-nav-id="/jtc10/lab8/" class="nav-item my-1 active">
                 
                  <a href="/jtc10/lab8/" class="nav-link p-0">
                     Lab 8: Traffic Mirroring
@@ -412,42 +411,79 @@
 
 </div>
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
-	<nav id="TableOfContents">
-  <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
-  </ul>
-</nav>
+	<nav id="TableOfContents"></nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 8: Traffic Mirroring</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
+<p>Traffic mirroring, also called shadowing, is a powerful concept that provides a risk-free method of testing your releases in the production environment without impacting your end users.</p>
+<p>Instead of using traditional pre-production environments which used to be a replica of production, mirroring can provide synthetic traffic to mimic the live environment.</p>
+<p>Traffic monitoring works in the following way:</p>
 <ul>
-<li>In this Lab you will learn the basics of Docker:</li>
+<li>You deploy a new version of your component (v2)</li>
+<li>The existing version (v1) works loke before but sends an asynchronous copy to the new version</li>
+<li>The new version (v2) processes the incoming traffic but does not respond to the user (fire-and-forget)</li>
+<li>The Dev and Ops teams can monitor the new version in order to identify potential problems before starting the rollout</li>
 </ul>
+<p>Let&rsquo;s start the Lab.</p>
 <ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
-</ol>
+<li>
+<p>Create a Virtual Service that sends all traffic to v1 of the <code>reviews</code> service</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">apiVersion</span>: networking.istio.io/v1alpha3
+<span style="color:#66d9ef">kind</span>: VirtualService
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: reviews
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">hosts</span>:
+  - reviews
+  <span style="color:#66d9ef">http</span>:
+  - <span style="color:#66d9ef">route</span>:
+    - <span style="color:#66d9ef">destination</span>:
+        <span style="color:#66d9ef">host</span>: reviews
+        <span style="color:#66d9ef">subset</span>: v1
+</code></pre></div><p>``
+Run the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f ~/training/istio/samples/bookinfo/networking/virtual-service-all-v1.yaml
+ 
+&gt; virtualservice.networking.istio.io/reviews configured
 
-	
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Create a Virtual Service that sends all traffic to v1 and mirrors it to v2 of the <code>reviews</code> service</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">apiVersion</span>: networking.istio.io/v1alpha3
+<span style="color:#66d9ef">kind</span>: VirtualService
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: reviews
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">hosts</span>:
+  - reviews
+  <span style="color:#66d9ef">http</span>:
+  - <span style="color:#66d9ef">route</span>:
+    - <span style="color:#66d9ef">destination</span>:
+        <span style="color:#66d9ef">host</span>: reviews
+        <span style="color:#66d9ef">subset</span>: v1
+    <span style="color:#66d9ef">mirror</span>:
+      <span style="color:#66d9ef">host</span>: nginx
+      <span style="color:#66d9ef">subset</span>: v2
+<span style="color:#66d9ef">mirror_percent</span>: <span style="color:#ae81ff">100</span>
+</code></pre></div><p>``
+Run the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f ~/training/istio/samples/bookinfo/networking/virtual-service-mirror-v1-v2.yaml
+ 
+&gt; virtualservice.networking.istio.io/reviews configured
+
+</code></pre></div><p>``</p>
+</li>
+</ol>
+<p>After a short while you should see traffic starting to flow from <code>reviews</code> (v2) to <code>ratings</code>, because <code>reviews</code> (v2) is receiving the mirrored traffic.</p>
+<p><img src="./images/istio0.png" alt=""></p>
+
+
+    
 
 
                     
@@ -456,7 +492,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc10/lab7/" title="Lab 7: End-user authentication"><i class="fas fa-chevron-left p-1"></i>Lab 7: End-user authentication</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc10/lab9/" title="Lab 9: Fault Injection">Lab 9: Fault Injection<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

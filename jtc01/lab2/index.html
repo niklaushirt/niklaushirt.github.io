@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc01/lab2/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 2: Docker Basics | My New Hugo Site
         
     </title>
 
@@ -67,7 +66,7 @@
         
         <a class="nav-link p-0" href="/labpreparation/"><h6>Lab Preparation</h6></a>
     </li>
-    <li data-nav-id="/jtc01/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc01/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc01/"><h6>JTC01 Docker</h6></a>
@@ -78,7 +77,7 @@
                     Lab 1: Get to know Docker
                 </a>
         </li>
-        <li data-nav-id="/jtc01/lab2/" class="nav-item my-1">
+        <li data-nav-id="/jtc01/lab2/" class="nav-item my-1 active">
                 
                  <a href="/jtc01/lab2/" class="nav-link p-0">
                     Lab 2: Docker Basics
@@ -414,40 +413,284 @@
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
 	<nav id="TableOfContents">
   <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
+    <li><a href="#create-your-first-image">Create your first Image</a></li>
+    <li><a href="#run-your-first-image">Run your first Image</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#use-portainer">Use Portainer</a></li>
+    <li><a href="#create-the-frontend-image">Create the frontend Image</a></li>
+    <li><a href="#run-the-frontend-image">Run the frontend Image</a></li>
+    <li><a href="#push-the-frontend-image-to-the-registry">Push the frontend Image to the registry</a></li>
+    <li><a href="#run-the-frontend-image-from-the-registry">Run the frontend Image from the registry</a></li>
   </ul>
 </nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 2: Docker Basics</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
+<h2 id="create-your-first-image">Create your first Image</h2>
+<p><img src="../../images/docker_arch1.png" alt="K8s CNI"></p>
+<p>Let&rsquo;s create our first image (the <code>k8sdemo-backend</code> image) from this <code>Dockerfile</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">FROM node:<span style="color:#ae81ff">8</span>-stretch
+
+<span style="color:#75715e"># Change working directory</span>
+WORKDIR <span style="color:#e6db74">&#34;/app&#34;</span>
+
+<span style="color:#75715e"># Update packages and install dependency packages for services</span>
+RUN apt-get update \
+ <span style="color:#75715e">&amp;&amp;</span> apt-get dist-upgrade -y \
+ <span style="color:#75715e">&amp;&amp;</span> apt-get clean \
+ <span style="color:#75715e">&amp;&amp;</span> echo <span style="color:#e6db74">&#39;Finished installing dependencies&#39;</span>
+
+<span style="color:#75715e"># Install npm production packages</span>
+COPY package.json /app/
+RUN cd /app; npm install --production
+
+COPY . /app
+
+ENV NODE_ENV production
+ENV BACKEND_MESSAGE HelloWorld
+
+ENV PORT <span style="color:#ae81ff">3000</span>
+
+EXPOSE <span style="color:#ae81ff">3000</span>
+
+CMD [<span style="color:#e6db74">&#34;npm&#34;</span>, <span style="color:#e6db74">&#34;start&#34;</span>]
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd ~/training/demo-app/k8sdemo_backend
+
+docker build -t k8sdemo-backend:lab .
+
+&gt; Sending build context to Docker daemon  6.975MB
+&gt; Step 1/11 : FROM node:8-stretch
+&gt;  ---&gt; 7a9afc16a57f
+&gt; Step 2/11 : WORKDIR <span style="color:#e6db74">&#34;/app&#34;</span>
+&gt;  ---&gt; Using cache
+&gt;  ---&gt; a2515f8a3ec5
+...
+&gt; Step 11/11 : CMD <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;npm&#34;</span>, <span style="color:#e6db74">&#34;start&#34;</span><span style="color:#f92672">]</span>
+&gt;  ---&gt; Using cache
+&gt;  ---&gt; b9b0f3fea9f7
+&gt; Successfully built b9b0f3fea9f7
+&gt; Successfully tagged k8sdemo-backend:lab
+
+</code></pre></div><h2 id="run-your-first-image">Run your first Image</h2>
+<p><img src="../../images/docker_arch2.png" alt="K8s CNI"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --rm --name k8sdemo-backend -p 3001:3000 k8sdemo-backend:lab
+
+&gt; test@0.0.0 start /app
+&gt; node ./bin/www
+
+</code></pre></div><p>This command runs the backend server:</p>
 <ul>
-<li>In this Lab you will learn the basics of Docker:</li>
+<li>&ndash;rm makes sure that the container is deleted once it&rsquo;s stopped</li>
+<li>&ndash;name gives the container a fixed name (otherwise you get some pretty funny, automatically generated names - think drunken-weasel)</li>
+<li>-p exposes the container port 3000 to the outside port 3001 (we do this so that it does not conflict with port 3000 of the k8sdemo web application we will start later)</li>
+<li>k8sdemo-backend:lab is the image we created before</li>
 </ul>
+<h4 id="hint-lab2_runyourfirstimage">Hint Lab2_RunYourFirstImage</h4>
+<p>No hint available</p>
+<h4 id="complete-lab2_runyourfirstimage">Complete Lab2_RunYourFirstImage</h4>
+<p>Confirm Lab2_RunYourFirstImage complete</p>
+<h4 id="task-lab2_useportainer">Task Lab2_UsePortainer</h4>
+<hr>
+<h2 id="use-portainer">Use Portainer</h2>
+<p>Portainer Community Edition is a powerful, open-source management toolset that allows you to easily build, manage and maintain Docker environments.</p>
 <ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
+<li>
+<p><a href="http://localhost:9010">Open URL</a> or use the Portainer Bookmark</p>
+</li>
+<li>
+<p>Login in with <code>admin</code>/<code>passw0rd</code> (already prefilled)</p>
+</li>
+<li>
+<p>Select <code>local</code> for our Endpoint</p>
+<p><img src="../../images/docker1.png" alt="K8s CNI"></p>
+<p>Now you get an overview of your local Docker instance.</p>
+</li>
+<li>
+<p>Select <code>Containers</code></p>
+<p><img src="../../images/docker4.png" alt="K8s CNI"></p>
+</li>
+<li>
+<p>You get a list of all running containers and you can see our <code>k8sdemo-backend</code> container running.</p>
+<p><img src="../../images/docker3.png" alt="K8s CNI"></p>
+</li>
+<li>
+<p>Click on the PublishedPorts 3001:3000 to open the backend web interface.</p>
+</li>
+<li>
+<p>In your terminal you will see that this generated some traffic:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --rm --name k8sdemo-backend -p 3001:3000 k8sdemo-backend:lab
+   
+&gt; test@0.0.0 start /app
+&gt; node ./bin/www
+   
+&gt; GET / <span style="color:#ae81ff">304</span> 225.805 ms - -
+&gt; GET /stylesheets/style.css <span style="color:#ae81ff">304</span> 2.175 ms - -
+   
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Stop the container by hitting <code>CTRL-C</code> in the terminal (several times if needed)</p>
+</li>
+</ol>
+<p>** So now we have tested our backend component. **</p>
+<h2 id="create-the-frontend-image">Create the frontend Image</h2>
+<p>Let&rsquo;s create our first image (the <code>k8sdemo</code> frontend image) from this <code>Dockerfile</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">FROM node:<span style="color:#ae81ff">8</span>-stretch
+
+<span style="color:#75715e"># Change working directory</span>
+WORKDIR <span style="color:#e6db74">&#34;/app&#34;</span>
+
+<span style="color:#75715e"># Update packages and install dependency packages for services</span>
+RUN apt-get update \
+ <span style="color:#75715e">&amp;&amp;</span> apt-get dist-upgrade -y \
+ <span style="color:#75715e">&amp;&amp;</span> apt-get clean \
+ <span style="color:#75715e">&amp;&amp;</span> echo <span style="color:#e6db74">&#39;Finished installing dependencies&#39;</span>
+
+<span style="color:#75715e"># Install npm production packages</span>
+COPY package.json /app/
+RUN cd /app; npm install --production
+
+COPY . /app
+
+ENV NODE_ENV production
+ENV BACKEND_URL https://api.nasa.gov/planetary/apod\?api_key\=DEMO_KEY
+ENV PORT <span style="color:#ae81ff">3000</span>
+
+EXPOSE <span style="color:#ae81ff">3000</span>
+
+CMD [<span style="color:#e6db74">&#34;npm&#34;</span>, <span style="color:#e6db74">&#34;start&#34;</span>]
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd ~/training/demo-app/k8sdemo
+
+docker build -t k8sdemo:lab .
+
+&gt; Sending build context to Docker daemon  13.23MB
+&gt; Step 1/11 : FROM node:8-stretch
+&gt;  ---&gt; 7a9afc16a57f
+&gt; Step 2/11 : WORKDIR <span style="color:#e6db74">&#34;/app&#34;</span>
+&gt;  ---&gt; Using cache
+&gt;  ---&gt; a2515f8a3ec5
+...
+&gt; Step 11/11 : CMD <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;npm&#34;</span>, <span style="color:#e6db74">&#34;start&#34;</span><span style="color:#f92672">]</span>
+&gt;  ---&gt; Using cache
+&gt;  ---&gt; 5293cb32d1f6
+&gt; Successfully built 5293cb32d1f6
+&gt; Successfully tagged k8sdemo:lab
+
+</code></pre></div><h2 id="run-the-frontend-image">Run the frontend Image</h2>
+<ol>
+<li>
+<p>First let&rsquo;s run the backend container again, but this time in the background</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --rm -d --name k8sdemo-backend -p 3001:3000 k8sdemo-backend:lab
+   
+&gt; 444b0570058b97f0532ef89c92963bb7da6aa1f2d3e27bf8c989da5fb8277fe0
+</code></pre></div><p>``</p>
+<p>This command runs the backend server:</p>
+<ul>
+<li>-d runs the container in the background (as a daemon)</li>
+</ul>
+</li>
+<li>
+<p>Then we start the new Web Frontend container</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --rm --name k8sdemo -p 3000:3000 --env BACKEND_URL<span style="color:#f92672">=</span>http://172.17.0.1:3001/api k8sdemo:lab
+   
+&gt; test@0.0.0 start /app
+&gt; node ./bin/www
+   
+</code></pre></div><p>``</p>
+</li>
+</ol>
+<p>This command runs the frontend server:</p>
+<ul>
+<li>&ndash;rm makes sure that the container is deleted once it&rsquo;s stopped</li>
+<li>&ndash;name gives the container a fixed name</li>
+<li>&ndash;env defines the environment variable that points to the <code>k8sdemo-backend</code> server API</li>
+<li>-p exposes the container port 3000 to the outside port 3000</li>
+<li>k8sdemo:lab is the image we created before</li>
+</ul>
+<ol start="3">
+<li>
+<p>Go back to Portainer and refresh the browser</p>
+<p><img src="../../images/docker5.png" alt="K8s CNI"></p>
+</li>
+<li>
+<p>Click on the PublishedPorts 3000:3000 for <code>k8sdemo</code> to open the web interface.</p>
+</li>
+<li>
+<p>Refresh several times and check in the terminal that some traffic is being generated</p>
+</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">GET / <span style="color:#ae81ff">304</span> 6.314 ms - -
+GET /public/bootstrap.min.css <span style="color:#ae81ff">304</span> 0.975 ms - -
+GET /public/bootstrap-theme.min.css <span style="color:#ae81ff">304</span> 0.843 ms - -
+GET /public/stylesheets/style.css <span style="color:#ae81ff">304</span> 2.568 ms - -
+GET /public/images/ibm_cloud.png <span style="color:#ae81ff">304</span> 0.522 ms - -
+GET /public/images/cloud_private.png <span style="color:#ae81ff">304</span> 1.057 ms - -
+GET /public/images/back.png <span style="color:#ae81ff">304</span> 0.411 ms - -
+The value of BACKEND_URL is: http://k8sdemo-backend
+Error: getaddrinfo ENOTFOUND k8sdemo-backend k8sdemo-backend:80
+</code></pre></div><ol start="6">
+<li>Stop the container by hitting <code>CTRL-C</code> in the terminal</li>
+</ol>
+<h2 id="push-the-frontend-image-to-the-registry">Push the frontend Image to the registry</h2>
+<p><img src="../../images/docker_arch3.png" alt="K8s CNI"></p>
+<ol>
+<li>
+<p>Let&rsquo;s tag the image with the address of the local Docker registry (localhost:5000).</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker tag k8sdemo:lab localhost:5000/k8sdemo:lab
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Expose the local Docker registry.</p>
+<p>First execute this in order to be able to access the private registry:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward --namespace kube-system <span style="color:#66d9ef">$(</span>kubectl get po -n kube-system | grep kube-registry-v0 | <span style="color:#ae81ff">\a</span>wk <span style="color:#e6db74">&#39;{print $1;}&#39;</span><span style="color:#66d9ef">)</span> 5000:5000  &gt; /dev/null&amp;
+       
+</code></pre></div><p>``</p>
+<p>This exposes the Docker Registry to the Terminal we are using.</p>
+<blockquote>
+<p>If you don&rsquo;t get a command line prompt, press <code>enter</code> several times</p>
+</blockquote>
+</li>
+<li>
+<p>And now push the image to the local registry:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker push localhost:5000/k8sdemo:lab
+</code></pre></div><p>``</p>
+</li>
+</ol>
+<p>Messages like <code>Handling connection for 5000</code> and <code>Retrying in x seconds</code> are due to the Lab setup and can be ignored.</p>
+<p>Now the image is available to be aquired (pulled) from any machine that has access to the Docker registry.</p>
+<h2 id="run-the-frontend-image-from-the-registry">Run the frontend Image from the registry</h2>
+<ol>
+<li>
+<p>Now let&rsquo;s start the Web Frontend container with the image from the registry</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run -d --rm --name k8sdemo -p 3000:3000 --env BACKEND_URL<span style="color:#f92672">=</span>http://172.17.0.1:3001/api localhost:5000/k8sdemo:lab
+   
+&gt; b6e46d8bd60978af7e9e45260111e938da63a64247c9cff3b4e398a6498670a6
+   
+</code></pre></div><p>``</p>
+</li>
+</ol>
+<p>This command runs the frontend server:</p>
+<ul>
+<li>&ndash;rm makes sure that the container is deleted once it&rsquo;s stopped</li>
+<li>&ndash;name gives the container a fixed name</li>
+<li>&ndash;env defines the environment variable that points to the <code>k8sdemo-backend</code> server API</li>
+<li>-p exposes the container port 3000 to the outside port 3000</li>
+<li>-d runs the container in the background (as a daemon)</li>
+<li>localhost:5000/k8sdemo:lab is the image we have pushed to the registry before</li>
+</ul>
+<ol start="3">
+<li>Go back to your browser and refresh the <code>k8sdemo</code> web application to make sure that the container has been started.</li>
 </ol>
 
-	
+
+    
 
 
                     
@@ -456,7 +699,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc01/lab1/" title="Lab 1: Get to know Docker"><i class="fas fa-chevron-left p-1"></i>Lab 1: Get to know Docker</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc01/lab3/" title="Lab 3: Docker Internals">Lab 3: Docker Internals<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

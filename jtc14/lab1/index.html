@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc14/lab1/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 1: Kubernetes Operators | My New Hugo Site
         
     </title>
 
@@ -214,7 +213,7 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc14/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc14/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc14/"><h6>JTC14 Kubernetes Ansible Operators</h6></a>
@@ -225,7 +224,7 @@
                     Lab 0: Prepare the Lab environment
                 </a>
         </li>
-        <li data-nav-id="/jtc14/lab1/" class="nav-item my-1">
+        <li data-nav-id="/jtc14/lab1/" class="nav-item my-1 active">
                 
                  <a href="/jtc14/lab1/" class="nav-link p-0">
                     Lab 1: Kubernetes Operators
@@ -414,40 +413,56 @@
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
 	<nav id="TableOfContents">
   <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
+    <li>
+      <ul>
+        <li><a href="#elements-of-an-operator-implementation">Elements of an Operator implementation</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 1: Kubernetes Operators</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
+<p>In this Lab you will learn about Kubernetes Operator basics and create your first Ansible based Operator.</p>
+<p>The Operator Framework is an open source toolkit to manage Kubernetes native applications, called Operators, in an effective, automated, and scalable way.</p>
 <ul>
-<li>In this Lab you will learn the basics of Docker:</li>
+<li>
+<p>Operators are a <strong>design pattern</strong> made public in a 2016 CoreOS blog post.</p>
+</li>
+<li>
+<p>The goal of an Operator is to <strong>put operational knowledge into software</strong>.
+Previously this knowledge only resided in the minds of administrators, various combinations of shell scripts or automation software like Ansible. It was outside of your Kubernetes cluster and hard to integrate.</p>
+</li>
+<li>
+<p>Operators implement and <strong>automate common Day-1</strong> (installation, configuration, etc) <strong>and Day-2</strong> (re-configuration, update, backup, failover, restore, etc.) <strong>activities</strong> in a piece of software running inside your Kubernetes cluster, by integrating natively with Kubernetes concepts and APIs.</p>
+</li>
 </ul>
-<ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
-</ol>
+<p><img src="./images/op1.png" alt=""></p>
+<p>Operators extend Kubernetes by allowing you to define a <strong>Custom Controller</strong> to watch your application and perform custom tasks based on its state (a perfect fit to automate maintenance of the stateful application we described above).</p>
+<p>The application you want to watch is defined in Kubernetes as a new object: a <strong>Custom Resource</strong> (CR) that has its own yaml spec and object type (in K8s, a kind) that is understood by the API server.</p>
+<p>That way, you can define any specific criteria in the custom spec to watch out for, and reconcile the instance when it doesn’t match the spec. The way an operator’s controller reconciles against a spec is very similar to native Kubernetes’ controllers, though it is using mostly custom components.</p>
+<h3 id="elements-of-an-operator-implementation">Elements of an Operator implementation</h3>
+<ul>
+<li>A <strong>Custom Resource Definition</strong> (CRD) spec that defines the format of the Custom Resource</li>
+<li>A <strong>Custom Controller</strong> to watch our application
+<ul>
+<li>
+<pre><code>Custom code within the new controller that dictates how to reconcile 	our CR against the spec
+</code></pre>
+</li>
+</ul>
+</li>
+<li>An <strong>Operator</strong> to manage the Custom Controller</li>
+<li>A <strong>Custom Resource</strong> (CR) spec that defines the application we want to watch</li>
+<li>A <strong>deployment</strong> for the Operator and Custom Resource</li>
+</ul>
 
-	
+
+    
 
 
                     
@@ -456,7 +471,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc14/lab0/" title="Lab 0: Prepare the Lab environment"><i class="fas fa-chevron-left p-1"></i>Lab 0: Prepare the Lab environment</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc14/lab2/" title="Lab 2: Create the Lab Operator Project">Lab 2: Create the Lab Operator Project<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc10/lab7/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 7: End-user authentication | My New Hugo Site
         
     </title>
 
@@ -147,7 +146,7 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc10/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc10/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc10/"><h6>JTC10 Istio</h6></a>
@@ -188,7 +187,7 @@
                     Lab 6: Telemetry data
                 </a>
         </li>
-        <li data-nav-id="/jtc10/lab7/" class="nav-item my-1">
+        <li data-nav-id="/jtc10/lab7/" class="nav-item my-1 active">
                 
                  <a href="/jtc10/lab7/" class="nav-link p-0">
                     Lab 7: End-user authentication
@@ -414,40 +413,206 @@
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
 	<nav id="TableOfContents">
   <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
+    <li><a href="#request-authentication">Request Authentication</a></li>
+    <li><a href="#autorisation-policy">Autorisation Policy</a></li>
+    <li><a href="#autorisation-with-jwt">Autorisation with JWT</a></li>
+    <li><a href="#autorisation-with-custom-jwt">Autorisation with custom JWT</a></li>
   </ul>
 </nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 7: End-user authentication</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
+<p>Istio provides two types of authentication:</p>
 <ul>
-<li>In this Lab you will learn the basics of Docker:</li>
+<li>
+<p><strong>Peer authentication</strong>: used for service-to-service authentication to verify the client making the connection. Istio offers mutual TLS for transport authentication, which can be enabled without requiring service code changes.</p>
+<ul>
+<li>Provides each service with a strong identity representing its role to enable interoperability across clusters and clouds.</li>
+<li>Secures service-to-service communication.</li>
+<li>Provides a key management system to automate key and certificate generation, distribution, and rotation.</li>
 </ul>
+</li>
+<li>
+<p><strong>Request authentication</strong>: Used for end-user authentication to verify the credential attached to the request. Istio enables request-level authentication with JSON Web Token (JWT) validation and custom authentication via any OpenID Connect providers, for example:</p>
+<ul>
+<li>Keycloak</li>
+<li>Auth0</li>
+<li>Google Auth</li>
+</ul>
+</li>
+</ul>
+<p>Istio stores the authentication policies in Customresources.</p>
+<p>Request authentication policies specify the values needed to validate a JSON Web Token (JWT). These values include, among others, the following:</p>
+<ul>
+<li>The location of the token in the request</li>
+<li>The issuer or the request</li>
+<li>The public JSON Web Key Set (JWKS)</li>
+</ul>
+<p>Istio checks the presented token, if presented against the rules in the request authentication policy, and rejects requests with invalid tokens. <strong>When requests carry no token, they are accepted by default</strong>. To reject requests without tokens, you have to provide authorization rules that specify the restrictions for specific operations.</p>
+<p>You can find mor information here: <a href="https://istio.io/latest/docs/tasks/security/authentication/authn-policy/">https://istio.io/latest/docs/tasks/security/authentication/authn-policy/</a></p>
+<p>For this lab we use the test tokens from <a href="https://raw.githubusercontent.com/istio/istio/release-1.6/security/tools/jwt/samples/jwks.json">https://raw.githubusercontent.com/istio/istio/release-1.6/security/tools/jwt/samples/</a>.</p>
+<h2 id="request-authentication">Request Authentication</h2>
 <ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
+<li>
+<p>Get the Cluster IP (MY-CLUSTER-IP)</p>
+<p>Use the adequate method for this:</p>
+<p>Minikube in the training VM</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">minikube ip
+</code></pre></div><p>``
+or</p>
+<p>IBM Cloud Kubernetes Service</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ibmcloud ks worker ls --cluster &lt;MY-CLUSTER-NAME&gt;
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Try to access the productpage:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">export INGRESS_HOST<span style="color:#f92672">=</span>http://MY-CLUSTER-IP:30762
+curl $INGRESS_HOST/productpage -s -o /dev/null -w <span style="color:#e6db74">&#34;%{http_code}\n&#34;</span>
+   
+&gt; <span style="color:#ae81ff">200</span>
+</code></pre></div><p>``</p>
+<p>You should get an HTTP Code 200 - which means that the access is working.
+You can also try to refresh the productpage, it should load perfectly.</p>
+</li>
+<li>
+<p>Create the <code>RequestAuthentication</code> Object</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f - <span style="color:#e6db74">&lt;&lt;EOF
+</span><span style="color:#e6db74">apiVersion: &#34;security.istio.io/v1beta1&#34;
+</span><span style="color:#e6db74">kind: &#34;RequestAuthentication&#34;
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: &#34;jwt-example&#34;
+</span><span style="color:#e6db74">  namespace: istio-system
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  selector:
+</span><span style="color:#e6db74">    matchLabels:
+</span><span style="color:#e6db74">      istio: ingressgateway
+</span><span style="color:#e6db74">  jwtRules:
+</span><span style="color:#e6db74">  - issuer: &#34;testing@secure.istio.io&#34;
+</span><span style="color:#e6db74">    jwksUri: &#34;https://raw.githubusercontent.com/istio/istio/release-1.6/security/tools/jwt/samples/jwks.json&#34;
+</span><span style="color:#e6db74">EOF</span>
+   
+&gt; requestauthentication.security.istio.io/jwt-example created
+</code></pre></div><p>``</p>
+<p>Here we create the RequestAuthentication Object based on the test/demo tokens provided by Istio: <a href="https://raw.githubusercontent.com/istio/istio/release-1.6/security/tools/jwt/samples/jwks.json">https://raw.githubusercontent.com/istio/istio/release-1.6/security/tools/jwt/samples/</a>.</p>
+<p>The JSON Web Key Set (JWKS) is a set of keys which contains the public keys used to verify any JSON Web Token (JWT).</p>
+</li>
+<li>
+<p>Try to access the productpage again:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl $INGRESS_HOST/productpage -s -o /dev/null -w <span style="color:#e6db74">&#34;%{http_code}\n&#34;</span>
+   
+&gt; <span style="color:#ae81ff">200</span>
+</code></pre></div><p>``</p>
+<p>You should still get an HTTP Code 200 - which means that the access is working, because requests that carry no token, are accepted by default.</p>
+</li>
+<li>
+<p>However trying to access the productpage with an invalid token should not work:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl --header <span style="color:#e6db74">&#34;Authorization: Bearer my-invalid-token&#34;</span> $INGRESS_HOST/productpage -s -o /dev/null -w <span style="color:#e6db74">&#34;%{http_code}\n&#34;</span>
+   
+&gt; <span style="color:#ae81ff">401</span>
+</code></pre></div><p>``</p>
+<p>You should get an HTTP Code 401 (Unauthorized) - which means that the access is blocked if you use an invalid token.</p>
+</li>
 </ol>
+<h2 id="autorisation-policy">Autorisation Policy</h2>
+<ol>
+<li>
+<p>Create the <code>AutorisationPolicy</code>
+So to reject requests that carry no token, we have to provide authorization rules that specify the restrictions for specific operations, for example paths or actions.
+The following <code>AuthorizationPolicy</code> contains a rule specifying a DENY action for requests without request principals:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f - <span style="color:#e6db74">&lt;&lt;EOF
+</span><span style="color:#e6db74">apiVersion: &#34;security.istio.io/v1beta1&#34;
+</span><span style="color:#e6db74">kind: &#34;AuthorizationPolicy&#34;
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: &#34;frontend-ingress&#34;
+</span><span style="color:#e6db74">  namespace: istio-system
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  selector:
+</span><span style="color:#e6db74">    matchLabels:
+</span><span style="color:#e6db74">      istio: ingressgateway
+</span><span style="color:#e6db74">  action: DENY
+</span><span style="color:#e6db74">  rules:
+</span><span style="color:#e6db74">  - from:
+</span><span style="color:#e6db74">    - source:
+</span><span style="color:#e6db74">        notRequestPrincipals: [&#34;*&#34;]
+</span><span style="color:#e6db74">EOF</span>
+       
+&gt; authorizationpolicy.security.istio.io/frontend-ingress created
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Try to access the productpage again:</p>
+</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl $INGRESS_HOST/productpage -s -o /dev/null -w <span style="color:#e6db74">&#34;%{http_code}\n&#34;</span>
 
-	
+&gt; <span style="color:#ae81ff">403</span>
+</code></pre></div><p>You should get an HTTP Code 403 (Forbidden) - which means that the access is now blocked if you provide no token.</p>
+<h2 id="autorisation-with-jwt">Autorisation with JWT</h2>
+<p>Now, to validate that the access works with a valid JWT token, we call the URL with the JWT token provided by Istio: <a href="https://raw.githubusercontent.com/istio/istio/release-1.6/security/tools/jwt/samples/demo.jwt">https://raw.githubusercontent.com/istio/istio/release-1.6/security/tools/jwt/samples/</a> that will be validated by the JWKS public key defined in the <code>RequestAuthentication</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">
+TOKEN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>curl https://raw.githubusercontent.com/istio/istio/release-1.6/security/tools/jwt/samples/demo.jwt -s<span style="color:#66d9ef">)</span>
+curl --header <span style="color:#e6db74">&#34;Authorization: Bearer </span>$TOKEN<span style="color:#e6db74">&#34;</span> $INGRESS_HOST/productpage -s -o /dev/null -w <span style="color:#e6db74">&#34;%{http_code}\n&#34;</span>
+
+&gt; <span style="color:#ae81ff">200</span>
+&gt; 
+</code></pre></div><p>You should get an HTTP Code 200 - which means that the access is working, because the JWT token has been validated againts the JWKS.</p>
+<h2 id="autorisation-with-custom-jwt">Autorisation with custom JWT</h2>
+<p>In the previous example we have been using a pre-created JWT token provided by Istio.
+In this Lab we are going to create a custom JWT token based on the same private key that has been used for the previous one and that is being validated by the JWKS.</p>
+<ol>
+<li>
+<p>Install the needed componenets and libraries</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt install python3-pip
+pip3 install jwcrypto
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Install the python-based tool to generate valid JWT tokens</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wget https://raw.githubusercontent.com/istio/istio/release-1.6/security/tools/jwt/samples/gen-jwt.py
+chmod +x gen-jwt.py
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Get the private key from the Istio Git repository that we will use to sign the token</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wget https://raw.githubusercontent.com/istio/istio/release-1.6/security/tools/jwt/samples/key.pem
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Create a JWT token to access the application</p>
+</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">TOKEN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>./gen-jwt.py ./key.pem --expire 500000<span style="color:#66d9ef">)</span>
+echo $TOKEN 
+
+curl --header <span style="color:#e6db74">&#34;Authorization: Bearer </span>$TOKEN<span style="color:#e6db74">&#34;</span> $INGRESS_HOST/productpage -s -o /dev/null -w <span style="color:#e6db74">&#34;%{http_code}\n&#34;</span>
+
+&gt; <span style="color:#ae81ff">200</span>
+</code></pre></div><p>You should get an HTTP Code 200 - which means that the access is working, because our JWT token has been validated againts the JWKS.</p>
+<ol start="5">
+<li>Create a JWT token with 5 seconds expiry to access the application</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">  TOKEN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>./gen-jwt.py ./key.pem --expire 5<span style="color:#66d9ef">)</span>
+  <span style="color:#66d9ef">for</span> i in <span style="color:#e6db74">`</span>seq <span style="color:#ae81ff">1</span> 10<span style="color:#e6db74">`</span>; <span style="color:#66d9ef">do</span> curl --header <span style="color:#e6db74">&#34;Authorization: Bearer </span>$TOKEN<span style="color:#e6db74">&#34;</span> $INGRESS_HOST/productpage -s -o /dev/null -w <span style="color:#e6db74">&#34;%{http_code}\n&#34;</span>; sleep 1; <span style="color:#66d9ef">done</span>
+  
+  &gt; <span style="color:#ae81ff">200</span>
+  &gt; <span style="color:#ae81ff">200</span>
+  &gt; <span style="color:#ae81ff">200</span>
+  &gt; <span style="color:#ae81ff">200</span>
+  &gt; <span style="color:#ae81ff">200</span>
+  &gt; <span style="color:#ae81ff">401</span>
+  &gt; <span style="color:#ae81ff">401</span>
+  &gt; <span style="color:#ae81ff">401</span>
+  &gt; <span style="color:#ae81ff">401</span>
+  ...
+</code></pre></div><pre><code>You should get an HTTP Code 200 for about 5 seconds until the token expires, after which you will get a 401 error.
+</code></pre>
+
+
+    
 
 
                     
@@ -456,7 +621,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc10/lab6/" title="Lab 6: Telemetry data"><i class="fas fa-chevron-left p-1"></i>Lab 6: Telemetry data</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc10/lab8/" title="Lab 8: Traffic Mirroring">Lab 8: Traffic Mirroring<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

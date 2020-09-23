@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc19/lab1/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 1: Tekton | My New Hugo Site
         
     </title>
 
@@ -344,12 +343,12 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc19/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc19/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc19/"><h6>JTC19 CloudNative DevOps</h6></a>
         <ul class="list-unstyled ml-2">
-        <li data-nav-id="/jtc19/lab1/" class="nav-item my-1">
+        <li data-nav-id="/jtc19/lab1/" class="nav-item my-1 active">
                 
                  <a href="/jtc19/lab1/" class="nav-link p-0">
                     Lab 1: Tekton
@@ -412,42 +411,77 @@
 
 </div>
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
-	<nav id="TableOfContents">
-  <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
-  </ul>
-</nav>
+	<nav id="TableOfContents"></nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 1: Tekton</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
-<ul>
-<li>In this Lab you will learn the basics of Docker:</li>
-</ul>
-<ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
-</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f ~/training/devops/tekton/install/tekton.yaml
+kubectl apply -n tekton-pipelines -f ~/training/devops/tekton/install/tekton-dashboard.yaml
+kubectl apply -n tekton-pipelines -f ~/training/devops/tekton/install/triggers.yaml
 
-	
+
+minikube service -n tekton-pipelines tekton-dashboard
+
+
+kubectl apply -n tekton-pipelines -f ~/training/devops/tekton/pipeline/tekton-init.yaml
+
+
+kubectl create -n tekton-pipelines secret docker-registry regcred --docker-server<span style="color:#f92672">=</span>docker.io --docker-username<span style="color:#f92672">=</span>niklaushirt --docker-password<span style="color:#f92672">=</span>cool97 --docker-email<span style="color:#f92672">=</span>niklaushirt@gmail.com
+
+kubectl create ns training-pipeline
+  
+kubectl create -n training-pipeline secret docker-registry regcred --docker-server<span style="color:#f92672">=</span>docker.io --docker-username<span style="color:#f92672">=</span>niklaushirt --docker-password<span style="color:#f92672">=</span>cool97 --docker-email<span style="color:#f92672">=</span>niklaushirt@gmail.com
+  
+kubectl create -n training-pipeline secret docker-registry regcred --docker-server<span style="color:#f92672">=</span>docker.io --docker-username<span style="color:#f92672">=</span>niklaushirt --docker-password<span style="color:#f92672">=</span>cool97 --docker-email<span style="color:#f92672">=</span>niklaushirt@gmail.com
+
+  
+kubectl create ns training-dev  
+kubectl create ns training-test 
+kubectl create ns training-prod 
+  
+kubectl apply -n training-pipeline -f ~/training/devops/tekton/pipeline/tekton-init.yaml
+kubectl apply -n training-pipeline -f ~/training/devops/tekton/pipeline/tekton-resources.yaml
+kubectl apply -n training-pipeline -f ~/training/devops/tekton/pipeline/tekton-pipeline.yaml
+kubectl apply -n training-pipeline -f ~/training/devops/tekton/pipeline/tekton-tasks.yaml
+kubectl apply -n training-pipeline -f ~/training/devops/tekton/pipeline/tekton-trigger.yaml
+
+
+kubectl apply -n training-pipeline -f ~/training/devops/tekton/pipeline/tekton-
+
+					
+curl -v <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-H <span style="color:#e6db74">&#39;X-GitHub-Event: push&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-H <span style="color:#e6db74">&#39;X-Hub-Signature: sha1=04b10a4629d3f62606fdd8d4824cbe546eb43e1d&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-d <span style="color:#e6db74">&#39;{&#34;head_commit&#34;:{&#34;id&#34;:&#34;4e054cddfa7c3d81b2ca562e5298b823c404b0c5&#34;},&#34;repository&#34;:{&#34;url&#34;: &#34;https://github.com/tektoncd/triggers&#34;}}&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>http://172.17.0.4:30737/
+
+curl -v -H <span style="color:#e6db74">&#39;X-GitHub-Event: push&#39;</span> -H <span style="color:#e6db74">&#39;X-Hub-Signature: sha1=04b10a4629d3f62606fdd8d4824cbe546eb43e1d&#39;</span> -H <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> -d <span style="color:#e6db74">&#39;{&#34;head_commit&#34;:{&#34;id&#34;:&#34;4e054cddfa7c3d81b2ca562e5298b823c404b0c5&#34;},&#34;repository&#34;:{&#34;url&#34;: &#34;https://github.com/tektoncd/triggers&#34;}}&#39;</span> http://172.17.0.4:30737
+
+
+kubectl delete -n training-pipeline pipeline --all
+kubectl delete -n training-pipeline pipelinerun --all
+kubectl delete -n training-pipeline taskrun --all
+kubectl delete -n training-pipeline tasks --all
+kubectl delete -n training-pipeline pipelineresource --all
+
+
+
+
+</code></pre></div><p>kubectl create clusterrolebinding cluster-admin-binding<br>
+&ndash;clusterrole=cluster-admin<br>
+&ndash;user=system:serviceaccount:tekton-pipelines:default</p>
+<p>kubectl create clusterrolebinding cluster-admin-binding1<br>
+&ndash;clusterrole=cluster-admin<br>
+&ndash;user=system:serviceaccount:tekton-pipelines:tekton-dashboard
+system:serviceaccount:openshift-pipelines:tekton-dashboard</p>
+
+
+    
 
 
                     
@@ -456,7 +490,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc19/" title="JTC19 CloudNative DevOps"><i class="fas fa-chevron-left p-1"></i>JTC19 CloudNative DevOps</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc19/lab5/" title="Lab 5: Cleanup">Lab 5: Cleanup<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

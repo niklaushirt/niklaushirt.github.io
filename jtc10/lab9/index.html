@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc10/lab9/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 9: Fault Injection | My New Hugo Site
         
     </title>
 
@@ -147,7 +146,7 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc10/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc10/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc10/"><h6>JTC10 Istio</h6></a>
@@ -200,7 +199,7 @@
                     Lab 8: Traffic Mirroring
                 </a>
         </li>
-        <li data-nav-id="/jtc10/lab9/" class="nav-item my-1">
+        <li data-nav-id="/jtc10/lab9/" class="nav-item my-1 active">
                 
                  <a href="/jtc10/lab9/" class="nav-link p-0">
                     Lab 9: Fault Injection
@@ -412,42 +411,54 @@
 
 </div>
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
-	<nav id="TableOfContents">
-  <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
-  </ul>
-</nav>
+	<nav id="TableOfContents"></nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 9: Fault Injection</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
-<ul>
-<li>In this Lab you will learn the basics of Docker:</li>
-</ul>
+<p>To test microservices for resiliency, Istio allows us to inject delays and errors between services.</p>
+<p>Let&rsquo;s start the Lab.</p>
 <ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
+<li>
+<p>Let&rsquo;s create a VirtualService that creates 50% of 501 errors when the <code>details</code> service is called.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">apiVersion</span>: networking.istio.io/v1alpha3
+<span style="color:#66d9ef">kind</span>: VirtualService
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: details
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">hosts</span>:
+  - details
+  <span style="color:#66d9ef">http</span>:
+  - <span style="color:#66d9ef">fault</span>:
+      <span style="color:#66d9ef">abort</span>:
+        <span style="color:#66d9ef">httpStatus</span>: <span style="color:#ae81ff">500</span>
+        <span style="color:#66d9ef">percentage</span>:
+          <span style="color:#66d9ef">value</span>: <span style="color:#ae81ff">50</span>
+    <span style="color:#66d9ef">route</span>:
+    - <span style="color:#66d9ef">destination</span>:
+        <span style="color:#66d9ef">host</span>: details
+        <span style="color:#66d9ef">subset</span>: v1
+...
+</code></pre></div><p>``</p>
+<p>Run the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f ~/training/istio/samples/bookinfo/networking/fault-injection-details-v1.yaml
+     
+&gt; virtualservice.networking.istio.io/details created
+&gt; destinationrule.networking.istio.io/details created
+   
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>In Kiali click on the productpage (orange) box and after a short while you should see 500 errors appearing. In the right side dtail panel you will see additional information about the problem in your communication between microservices.</p>
+<p><img src="./images/istio1.png" alt=""></p>
+</li>
 </ol>
 
-	
+
+    
 
 
                     
@@ -456,7 +467,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc10/lab8/" title="Lab 8: Traffic Mirroring"><i class="fas fa-chevron-left p-1"></i>Lab 8: Traffic Mirroring</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc10/lab10/" title="Lab 10: Cleanup">Lab 10: Cleanup<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

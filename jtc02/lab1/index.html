@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc02/lab1/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 1. Get to know Kubernetes | My New Hugo Site
         
     </title>
 
@@ -98,12 +97,12 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc02/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc02/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc02/"><h6>JTC02 Kubernetes Labs</h6></a>
         <ul class="list-unstyled ml-2">
-        <li data-nav-id="/jtc02/lab1/" class="nav-item my-1">
+        <li data-nav-id="/jtc02/lab1/" class="nav-item my-1 active">
                 
                  <a href="/jtc02/lab1/" class="nav-link p-0">
                     Lab 1. Get to know Kubernetes
@@ -414,40 +413,131 @@
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
 	<nav id="TableOfContents">
   <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
+    <li>
+      <ul>
+        <li><a href="#deployment">Deployment</a></li>
+        <li><a href="#service">Service</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 1. Get to know Kubernetes</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
+<p>Kubernetes was developed by Google as part of the Borg project and handed off to the open source community in 2015. Kubernetes combines more than 15 years of Google research in running a containerized infrastructure with production work loads, open source contributions, and Docker container management tools to provide an isolated and secure app platform that is portable, extensible, and self-healing in case of failovers.</p>
+<p>Kubernetes is a solution that automates the orchestration of Container workloads.
+It is declarative, which means that you define the desired state and Kubernetes ensures that the state is matched at any given moment. For example you want to deploy three instances of a Container and one dies it will automatically restart a new one to match the desired state.</p>
+<p>If you want to learn more about Kubernetes, please follow Course JTC80 Kubernetes Introduction.</p>
+<p>In order to define the desired state, we use Resources (aka Objects).
+There are a lot of different types of Resources but the most important ones that we will be using are:</p>
 <ul>
-<li>In this Lab you will learn the basics of Docker:</li>
+<li>Pods - Smallest deployment unit, usually runs one Container inside</li>
+<li>ReplicaSets - Controls the number of Pods running</li>
+<li>Deployment - defines the deployment of a certain Container - creates a ReplicaSet</li>
+<li>Service - defines how to expose the Container on the network</li>
 </ul>
-<ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
-</ol>
+<p><img src="./images/kube1.png" alt=""></p>
+<h3 id="deployment">Deployment</h3>
+<p>A Deployment provides declarative updates for Pods (and ReplicaSets).</p>
+<p>You describe a desired state in a Deployment, and the Deployment Controller changes the actual state to the desired state at a controlled rate. You can define Deployments to create new ReplicaSets, or to remove existing Deployments and adopt all their resources with new Deployments.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">kind</span>: Deployment
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: nginx-deployment
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">replicas</span>: <span style="color:#ae81ff">2</span>
+  <span style="color:#66d9ef">template</span>:
+     <span style="color:#66d9ef">metadata</span>:
+       <span style="color:#66d9ef">labels</span>:
+         <span style="color:#66d9ef">app</span>: nginx
+     <span style="color:#66d9ef">spec</span>:
+       <span style="color:#66d9ef">containers</span>:
+       - <span style="color:#66d9ef">name</span>: nginx
+          <span style="color:#66d9ef">image</span>: nginx:<span style="color:#ae81ff">1.7.9</span>
+          <span style="color:#66d9ef">ports</span>:
+          - <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">80</span>
+</code></pre></div><p><img src="./images/kube3.png" alt=""></p>
+<p>This yaml file defines (amongst others):</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>metadata.name</td>
+<td>Name of the Deployment</td>
+<td></td>
+</tr>
+<tr>
+<td>spec.replicas</td>
+<td>The number of Pods to run simultaneuosly</td>
+<td></td>
+</tr>
+<tr>
+<td>spec.template.spec.containers.image</td>
+<td>The Container image to run</td>
+<td></td>
+</tr>
+<tr>
+<td>spec.template.spec.containers.ports</td>
+<td>The networking ports that should be exposed</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>More information on Deployments can be found <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">here</a>.</p>
+<h3 id="service">Service</h3>
+<p>An abstract way to expose an application running on a set of Pods as a network service.</p>
+<p>With Kubernetes you don’t need to modify your application to use an unfamiliar service discovery mechanism. Kubernetes gives Pods their own IP addresses and a single DNS name for a set of Pods, and can load-balance across them.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">kind</span>: Service
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: nginx-service
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">ports</span>:
+  - <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">8000</span>
+    <span style="color:#66d9ef">targetPort</span>: <span style="color:#ae81ff">80</span>
+    <span style="color:#66d9ef">protocol</span>: TCP
+  <span style="color:#66d9ef">selector</span>:
+    <span style="color:#66d9ef">app</span>: nginx
+</code></pre></div><p><img src="./images/kube5.png" alt=""></p>
+<p>This yaml file defines (amongst others):</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>metadata.name</td>
+<td>Name of the Service</td>
+<td></td>
+</tr>
+<tr>
+<td>spec.ports</td>
+<td>Port mapping to be exposed (port 80 of the container is exposed as port 8080)</td>
+<td></td>
+</tr>
+<tr>
+<td>spec. selector.app</td>
+<td>Defines the Deployment to map the Servcie to</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>More information on Services can be found <a href="https://kubernetes.io/docs/concepts/services-networking/service/">here</a>.</p>
 
-	
+
+    
 
 
                     
@@ -456,7 +546,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc02/" title="JTC02 Kubernetes Labs"><i class="fas fa-chevron-left p-1"></i>JTC02 Kubernetes Labs</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc02/lab2/" title="Lab 2. Deploy your first Pod">Lab 2. Deploy your first Pod<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

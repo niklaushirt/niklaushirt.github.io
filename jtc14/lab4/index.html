@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc14/lab4/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 4: Cleanup | My New Hugo Site
         
     </title>
 
@@ -214,7 +213,7 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc14/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc14/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc14/"><h6>JTC14 Kubernetes Ansible Operators</h6></a>
@@ -243,7 +242,7 @@
                     Lab 3: Deploy the Lab Operator
                 </a>
         </li>
-        <li data-nav-id="/jtc14/lab4/" class="nav-item my-1">
+        <li data-nav-id="/jtc14/lab4/" class="nav-item my-1 active">
                 
                  <a href="/jtc14/lab4/" class="nav-link p-0">
                     Lab 4: Cleanup
@@ -414,40 +413,31 @@
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
 	<nav id="TableOfContents">
   <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
+    <li><a href="#cleanup">Cleanup</a></li>
   </ul>
 </nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 4: Cleanup</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
-<ul>
-<li>In this Lab you will learn the basics of Docker:</li>
-</ul>
-<ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
-</ol>
+<h2 id="cleanup">Cleanup</h2>
+<p>Delete the <code>ansible-operator-frontend</code> Resources</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl delete -f  ~/ansible-operator/ansible-operator-frontend/deploy/crds/ansiblelab.ibm.com_myansiblelabdemos_crd.yaml
+kubectl delete -f  ~/ansible-operator/ansible-operator-frontend/deploy/service_account.yaml
+kubectl delete -f  ~/ansible-operator/ansible-operator-frontend/deploy/role.yaml
+kubectl delete -f  ~/ansible-operator/ansible-operator-frontend/deploy/role_binding.yaml
+kubectl delete -f  ~/ansible-operator/ansible-operator-frontend/deploy/operator.yaml
+kubectl delete -f  ~/ansible-operator/ansible-operator-frontend/deploy/crds/ansiblelab.ibm.com_v1beta1_myansiblelabdemo_cr.yaml 
+kubectl delete service -n default k8sdemoansible-service
+   
+</code></pre></div><p>**Congratulations!!! This concludes Lab 2 on Kubernetes Ansible Operators
+**</p>
 
-	
+
+    
 
 
                     
@@ -456,7 +446,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc14/lab3/" title="Lab 3: Deploy the Lab Operator"><i class="fas fa-chevron-left p-1"></i>Lab 3: Deploy the Lab Operator</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc16/" title="JTC16 Kubernetes Security Labs">JTC16 Kubernetes Security Labs<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

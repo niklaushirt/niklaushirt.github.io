@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc18/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        JTC18 Kubernetes Advanced Labs | My New Hugo Site
         
     </title>
 
@@ -307,7 +306,7 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc18/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc18/" class="nav-item my-1 parent active haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc18/"><h6>JTC18 Kubernetes Advanced Labs</h6></a>
@@ -422,32 +421,29 @@
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>JTC18 Kubernetes Advanced Labs</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
+<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
+<p>Kubernetes is a container orchestrator to provision, manage, and scale applications. In other words, Kubernetes allows you to manage the lifecycle of containerized applications within a cluster of nodes (which are a collection of worker machines, for example, VMs, physical machines etc.).</p>
+<p>The key paradigm of kubernetes is it’s Declarative model. The user provides the &ldquo;desired state&rdquo; and Kubernetes will do it&rsquo;s best make it happen. If you need 5 instances, you do not start 5 separate instances on your own but rather tell Kubernetes that you need 5 instances and Kubernetes will reconcile the state automatically. Simply at this point you need to know that you declare the state you want and Kubernetes makes that happen. If something goes wrong with one of your instances and it crashes, Kubernetes still knows the desired state and creates a new instances on an available node.</p>
+<p>In this Lab you will learn the basic concepts for working with Kubernetes.</p>
+<p>If you want to learn more about Kubernetes, please take course JTC80.</p>
 <h2 id="lab-sources">Lab sources</h2>
 <p>All the source code for the lab is available here:</p>
 <p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
 <h2 id="lab-overview">Lab overview</h2>
 <ul>
-<li>In this Lab you will learn the basics of Docker:</li>
+<li>Lab 1: Liveness and Readiness Probes</li>
+<li>Lab 2: Init Containers</li>
+<li>Lab 3: Persistent Storage - Refresher</li>
+<li>Lab 4: Dynamic Provisioning of PVC</li>
+<li>Lab 5: NFS Storage Provider</li>
 </ul>
-<ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
-</ol>
+<hr>
 
-	
+
+    
 
 
                     
@@ -456,7 +452,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc17/lab4/" title="Lab 4: Image Scanning"><i class="fas fa-chevron-left p-1"></i>Lab 4: Image Scanning</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc18/lab1/" title="Lab 1: Liveness and Readiness Probes">Lab 1: Liveness and Readiness Probes<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

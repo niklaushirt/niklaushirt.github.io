@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc10/lab6/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 6: Telemetry data | My New Hugo Site
         
     </title>
 
@@ -147,7 +146,7 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc10/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc10/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc10/"><h6>JTC10 Istio</h6></a>
@@ -182,7 +181,7 @@
                     Lab 5: Traffic flow management
                 </a>
         </li>
-        <li data-nav-id="/jtc10/lab6/" class="nav-item my-1">
+        <li data-nav-id="/jtc10/lab6/" class="nav-item my-1 active">
                 
                  <a href="/jtc10/lab6/" class="nav-link p-0">
                     Lab 6: Telemetry data
@@ -414,40 +413,73 @@
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
 	<nav id="TableOfContents">
   <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
+    <li><a href="#challenges-with-microservices">Challenges with microservices</a></li>
+    <li><a href="#istio-telemetry">Istio telemetry</a></li>
+    <li><a href="#collect-metrics-and-logs-using-prometheus-and-grafana">Collect metrics and logs using Prometheus and Grafana</a></li>
+    <li><a href="#collect-request-traces-using-jaeger">Collect request traces using Jaeger</a></li>
   </ul>
 </nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 6: Telemetry data</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
-<ul>
-<li>In this Lab you will learn the basics of Docker:</li>
-</ul>
-<ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
+<h2 id="challenges-with-microservices">Challenges with microservices</h2>
+<p>We all know that microservice architecture is the perfect fit for cloud native applications and it increases the delivery velocities greatly. Envision you have many microservices that are delivered by multiple teams, how do you observe the the overall platform and each of the service to find out exactly what is going on with each of the services?  When something goes wrong, how do you know which service or which communication among the few services are causing the problem?</p>
+<h2 id="istio-telemetry">Istio telemetry</h2>
+<p>Istio&rsquo;s tracing and metrics features are designed to provide broad and granular insight into the health of all services. Istio&rsquo;s role as a service mesh makes it the ideal data source for observability information, particularly in a microservices environment. As requests pass through multiple services, identifying performance bottlenecks becomes increasingly difficult using traditional debugging techniques. Distributed tracing provides a holistic view of requests transiting through multiple services, allowing for immediate identification of latency issues. With Istio, distributed tracing comes by default. This will expose latency, retry, and failure information for each hop in a request.</p>
+<p>You can read more about how <a href="https://istio.io/docs/concepts/policy-and-control/mixer.html">Istio mixer enables telemetry reporting</a>.</p>
+<h2 id="collect-metrics-and-logs-using-prometheus-and-grafana">Collect metrics and logs using Prometheus and Grafana</h2>
+<p>This step shows you how to configure <a href="https://istio.io/docs/concepts/policy-and-control/mixer.html">Istio Mixer</a> to gather telemetry for services in your cluster.</p>
+<ol start="2">
+<li>
+<p>Open the Grafana Dashboard</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl dashboard grafana &gt; /dev/null &amp;
+</code></pre></div><p>``</p>
+<blockquote>
+<p>Just hit enter a few times to get back the prompt if neeed.</p>
+</blockquote>
+</li>
+<li>
+<p>Click on the <code>Home</code> button in the upper left hand corner</p>
+</li>
+<li>
+<p>Select <code>Istio Service Dashboard</code></p>
+</li>
 </ol>
+<p>Your dashboard should look like this:<br>
+<img src="./images/grafana_1.png" alt="Grafana-Dashboard"></p>
+<p>Play around and observe the different metrics being collected.</p>
+<p><a href="https://istio.io/docs/tasks/telemetry/metrics/">Collecting Metrics on Istio</a></p>
+<p><a href="https://istio.io/docs/tasks/telemetry/logs/">Collecting Logs on Istio</a></p>
+<h2 id="collect-request-traces-using-jaeger">Collect request traces using Jaeger</h2>
+<p>Jaeger is a distributed tracing tool that is available with Istio.</p>
+<ol start="2">
+<li>Access the Jaeger Dashboard</li>
+</ol>
+<pre><code>```bash
+istioctl dashboard jaeger &gt; /dev/null &amp;
+```
 
-	
+&gt; Just hit enter a few times to get back the prompt if neeed.
+&gt; 
+</code></pre>
+<ol start="3">
+<li>Select <code>productpage.default</code> in the left hand <code>Service</code> dropdown</li>
+<li>Click <code>Find Traces</code></li>
+</ol>
+<p>Your dashboard should look something like this:</p>
+<p><img src="./images/jaeger1.png" alt="jaeger"></p>
+<ol start="5">
+<li>Click on one of those traces and you will see the details of the traffic you sent to your BookInfo App. It shows how much time it took for the request on <code>productpage</code> to finish. It also shows how much time it took for the requests on the <code>details</code>,<code>reviews</code>, and <code>ratings</code> services.</li>
+</ol>
+<p><img src="./images/jaeger3.png" alt="jaeger"></p>
+<p><a href="https://istio.io/docs/tasks/telemetry/distributed-tracing/">Jaeger Tracing on Istio</a></p>
+
+
+    
 
 
                     
@@ -456,7 +488,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc10/lab5/" title="Lab 5: Traffic flow management"><i class="fas fa-chevron-left p-1"></i>Lab 5: Traffic flow management</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc10/lab7/" title="Lab 7: End-user authentication">Lab 7: End-user authentication<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

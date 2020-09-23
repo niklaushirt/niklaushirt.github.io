@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc01/lab1/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 1: Get to know Docker | My New Hugo Site
         
     </title>
 
@@ -67,12 +66,12 @@
         
         <a class="nav-link p-0" href="/labpreparation/"><h6>Lab Preparation</h6></a>
     </li>
-    <li data-nav-id="/jtc01/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc01/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc01/"><h6>JTC01 Docker</h6></a>
         <ul class="list-unstyled ml-2">
-        <li data-nav-id="/jtc01/lab1/" class="nav-item my-1">
+        <li data-nav-id="/jtc01/lab1/" class="nav-item my-1 active">
                 
                  <a href="/jtc01/lab1/" class="nav-link p-0">
                     Lab 1: Get to know Docker
@@ -414,40 +413,52 @@
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
 	<nav id="TableOfContents">
   <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
+    <li><a href="#dockerfile">Dockerfile</a></li>
   </ul>
 </nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 1: Get to know Docker</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
 <p>Docker is an open platform for developing, shipping, and running applications.</p>
 <p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
-<ul>
-<li>In this Lab you will learn the basics of Docker:</li>
-</ul>
-<ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
-</ol>
+<p>Docker provides the ability to package and run an application in a loosely isolated environment called a container. The isolation and security allow you to run many containers simultaneously on a given host. Containers are lightweight because they don’t need the extra load of a hypervisor, but run directly within the host machine’s kernel. This means you can run more containers on a given hardware combination than if you were using virtual machines. You can even run Docker containers within host machines that are actually virtual machines!</p>
+<p>More details on <code>Docker</code> can be found <a href="https://docs.docker.com/engine/docker-overview/">here</a>.</p>
+<p><img src="../../../resources/images/docker_arch4.png" alt="K8s CNI"></p>
+<h2 id="dockerfile">Dockerfile</h2>
+<p>A <code>Dockerfile</code> is a text document that contains all the commands a user could call on the command line to assemble an image.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">FROM node:<span style="color:#ae81ff">8</span>-stretch
 
-	
+<span style="color:#75715e"># Change working directory</span>
+WORKDIR <span style="color:#e6db74">&#34;/app&#34;</span>
+
+<span style="color:#75715e"># Update packages and install dependency packages for services</span>
+RUN apt-get update \
+ <span style="color:#75715e">&amp;&amp;</span> apt-get dist-upgrade -y \
+ <span style="color:#75715e">&amp;&amp;</span> apt-get clean \
+ <span style="color:#75715e">&amp;&amp;</span> echo <span style="color:#e6db74">&#39;Finished installing dependencies&#39;</span>
+
+<span style="color:#75715e"># Install npm production packages</span>
+COPY package.json /app/
+RUN cd /app; npm install --production
+
+COPY . /app
+
+ENV NODE_ENV production
+ENV BACKEND_URL https://api.nasa.gov/planetary/apod\?api_key\=DEMO_KEY
+ENV PORT <span style="color:#ae81ff">3000</span>
+
+EXPOSE <span style="color:#ae81ff">3000</span>
+
+CMD [<span style="color:#e6db74">&#34;npm&#34;</span>, <span style="color:#e6db74">&#34;start&#34;</span>]
+</code></pre></div><p>The <code>docker build</code> command creates the container from the <code>Dockerfile</code>.</p>
+<p>More details on Dockerfiles can be found <a href="https://docs.docker.com/engine/reference/builder/">here</a>.</p>
+
+
+    
 
 
                     
@@ -456,7 +467,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc01/" title="JTC01 Docker"><i class="fas fa-chevron-left p-1"></i>JTC01 Docker</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc01/lab2/" title="Lab 2: Docker Basics">Lab 2: Docker Basics<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

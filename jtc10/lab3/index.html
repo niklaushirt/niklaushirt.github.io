@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc10/lab3/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 3: Deploy BookInfo application  | My New Hugo Site
         
     </title>
 
@@ -147,7 +146,7 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc10/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc10/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc10/"><h6>JTC10 Istio</h6></a>
@@ -164,7 +163,7 @@
                     Lab 2: Installing Istio 
                 </a>
         </li>
-        <li data-nav-id="/jtc10/lab3/" class="nav-item my-1">
+        <li data-nav-id="/jtc10/lab3/" class="nav-item my-1 active">
                 
                  <a href="/jtc10/lab3/" class="nav-link p-0">
                     Lab 3: Deploy BookInfo application 
@@ -414,40 +413,80 @@
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
 	<nav id="TableOfContents">
   <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
+    <li>
+      <ul>
+        <li><a href="#expose-the-application-via-ingress-gateway">Expose the Application via Ingress Gateway</a></li>
+      </ul>
+    </li>
+    <li><a href="#sidecar-injection">Sidecar injection</a></li>
   </ul>
 </nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 3: Deploy BookInfo application </h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
-<ul>
-<li>In this Lab you will learn the basics of Docker:</li>
-</ul>
+<p>In this part, we will be using the sample BookInfo Application that comes as default with Istio code base. As mentioned above, the application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The default application doesn&rsquo;t use a database and all the microservices store their data in the local file system.</p>
+<p><img src="./images/bookinfo.png" alt="kiali"></p>
+<p>Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f ~/training/istio/samples/bookinfo/platform/kube/bookinfo.yaml
+
+&gt; service/details created
+&gt; serviceaccount/bookinfo-details created
+&gt; deployment.apps/details-v1 created
+&gt; service/ratings created
+&gt; ...
+</code></pre></div><p>After a few minutes, you should now have your Kubernetes Pods running and have an Envoy sidecar in each of them alongside the microservice. The microservices are <strong>productpage, details, ratings, and reviews</strong>. Note that you&rsquo;ll have three versions of the reviews microservice.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl get pods 
+
+
+&gt; NAME                                        READY     STATUS    RESTARTS   AGE
+&gt; details-v1-1520924117-48z17                 2/2       Running   <span style="color:#ae81ff">0</span>          6m
+&gt; productpage-v1-560495357-jk1lz              2/2       Running   <span style="color:#ae81ff">0</span>          6m
+&gt; ratings-v1-734492171-rnr5l                  2/2       Running   <span style="color:#ae81ff">0</span>          6m
+&gt; reviews-v1-874083890-f0qf0                  2/2       Running   <span style="color:#ae81ff">0</span>          6m
+&gt; reviews-v2-1343845940-b34q5                 2/2       Running   <span style="color:#ae81ff">0</span>          6m
+&gt; reviews-v3-1813607990-8ch52                 2/2       Running   <span style="color:#ae81ff">0</span>          6m
+</code></pre></div><h3 id="expose-the-application-via-ingress-gateway">Expose the Application via Ingress Gateway</h3>
+<p>The components deployed on the service mesh by default are not exposed outside the cluster. External access to individual services so far has been provided by creating an external load balancer or node port on each service.</p>
+<p>An Ingress Gateway resource can be created to allow external requests through the Istio Ingress Gateway to the backing services.</p>
 <ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
+<li>
+<p>Create an Istio ingress gateway to access your services over a public IP address.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f  ~/training/istio/samples/bookinfo/networking/bookinfo-gateway.yaml
+   
+&gt; gateway.networking.istio.io/bookinfo-gateway created
+&gt; virtualservice.networking.istio.io/bookinfo created
+   
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>Open the webpage</p>
+<p><img src="./images/vm.png" alt=""> <strong>Training VM</strong></p>
+<p>If you are using the training VM, you can open the webpage directly by typing:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">firefox --new-tab http://<span style="color:#66d9ef">$(</span>minikube ip<span style="color:#66d9ef">)</span>:30762/productpage
+</code></pre></div><hr>
+<p><img src="./images/cloud.png" alt=""> <strong>Cloud/Standalone</strong></p>
+<p>If you are <strong>NOT</strong> using the training VM, you can open the webpage by forwarding a local port to the service in your Cluster.</p>
+<p>Execute this in a separate Terminal Window/Tab in order to be able to access the web page:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl port-forward --namespace istio-system <span style="color:#66d9ef">$(</span>kubectl get po -n istio-system | grep istio-ingressgateway| <span style="color:#ae81ff">\a</span>wk <span style="color:#e6db74">&#39;{print $1;}&#39;</span><span style="color:#66d9ef">)</span> 8080:8080 
+</code></pre></div><p>Now you can access your application via <a href="http://localhost:8080/productpage?u=normal">http://localhost:8080/productpage</a></p>
+</li>
 </ol>
+<p>If you refresh the page multiple times, you&rsquo;ll see that the <em>reviews</em> section of the page changes. That&rsquo;s because there are 3 versions of <strong>reviews</strong><em>(reviews-v1, reviews-v2, reviews-v3)</em> deployment for our <strong>reviews</strong> service. Istio’s load-balancer is using a round-robin algorithm to iterate through the 3 instances of this service</p>
+<h5 id="v1---no-ratings">V1 - No ratings</h5>
+<p><img src="./images/none.png" alt="productpage"></p>
+<h5 id="v2---ratings-with-black-stars">V2 - Ratings with black stars</h5>
+<p><img src="./images/black.png" alt="productpage"></p>
+<h5 id="v3--ratings-with-red-stars">V3- Ratings with red stars</h5>
+<p><img src="./images/red.png" alt="productpage"></p>
+<h2 id="sidecar-injection">Sidecar injection</h2>
+<p>In Kubernetes, a sidecar is a utility container in the pod, and its purpose is to support the main container. For Istio to work, Envoy proxies must be deployed as sidecars to each pod of the deployment. There are two ways of injecting the Istio sidecar into a pod: manually using the istioctl CLI tool or automatically using the Istio Initializer. In this exercise, we will use the manual injection. Manual injection modifies the controller configuration, e.g. deployment. It does this by modifying the pod template spec such that all pods for that deployment are created with the injected sidecar.</p>
 
-	
+
+    
 
 
                     
@@ -456,7 +495,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc10/lab2/" title="Lab 2: Installing Istio "><i class="fas fa-chevron-left p-1"></i>Lab 2: Installing Istio </a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc10/lab4/" title="Lab 4: Monitoring with Kiali">Lab 4: Monitoring with Kiali<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

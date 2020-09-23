@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc18/lab1/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 1: Liveness and Readiness Probes | My New Hugo Site
         
     </title>
 
@@ -307,12 +306,12 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc18/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc18/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc18/"><h6>JTC18 Kubernetes Advanced Labs</h6></a>
         <ul class="list-unstyled ml-2">
-        <li data-nav-id="/jtc18/lab1/" class="nav-item my-1">
+        <li data-nav-id="/jtc18/lab1/" class="nav-item my-1 active">
                 
                  <a href="/jtc18/lab1/" class="nav-link p-0">
                     Lab 1: Liveness and Readiness Probes
@@ -414,40 +413,221 @@
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
 	<nav id="TableOfContents">
   <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
+    <li><a href="#introduction">Introduction</a>
+      <ul>
+        <li><a href="#liveness-probes">Liveness Probes</a></li>
+        <li><a href="#readiness-probes">Readiness Probes</a></li>
+        <li><a href="#usage">Usage</a></li>
+      </ul>
+    </li>
+    <li><a href="#create-a-probe">Create a Probe</a>
+      <ul>
+        <li><a href="#examine-what-happened">Examine what happened</a></li>
+      </ul>
+    </li>
+    <li><a href="#adapt-probe-values">Adapt Probe values</a>
+      <ul>
+        <li><a href="#examine-what-happened-1">Examine what happened</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 1: Liveness and Readiness Probes</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
+<h2 id="introduction">Introduction</h2>
+<p>If you want to turn your Kubernetes deployments into auto healing wonders you only have to add a few lines of YAML.</p>
+<p>The right combination of <code>liveness and readiness probes</code> used with Kubernetes deployments can:</p>
 <ul>
-<li>In this Lab you will learn the basics of Docker:</li>
+<li>Enable zero downtime deploys</li>
+<li>Prevent deployment of broken images</li>
+<li>Ensure that failed containers are automatically restarted</li>
 </ul>
+<h3 id="liveness-probes">Liveness Probes</h3>
+<p>Liveness probes will attempt to restart a container if it fails and starts to respond to the probe.</p>
+<p>Example of a liveness probe that monitors the /health URL on port 3000.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">livenessProbe</span>:
+  <span style="color:#66d9ef">httpGet</span>:
+    <span style="color:#66d9ef">path</span>: /health
+    <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">3000</span>
+</code></pre></div><h3 id="readiness-probes">Readiness Probes</h3>
+<p>Updating deployments without readiness probes can result in downtime as old <code>Pods</code> are replaced by new pods and traffic might be sent to the <code>Pod</code> that is not ready to process requests yet (for example because the webserver is still initializing).</p>
+<p>With readiness probes, Kubernetes will not send traffic to a <code>Pod</code> until the probe is successful.</p>
+<p>Example of a readiness probe that monitors the /ready URL on port 3000.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"> <span style="color:#66d9ef">readinessProbe</span>:
+  <span style="color:#66d9ef">httpGet</span>:
+    <span style="color:#66d9ef">path</span>: /ready
+    <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">3000</span>
+</code></pre></div><h3 id="usage">Usage</h3>
+<p>A typical sequence migth look like this:</p>
 <ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
+<li>Readiness probe fails</li>
+<li>Kubernetes stops sending traffic to the pod</li>
+<li>Liveness probe fails</li>
+<li>Kubernetes restarts the failed container</li>
+<li>Readiness probe succeeds again (hopefully)</li>
+<li>Kubernetes starts sending traffic to the pod again</li>
 </ol>
+<p>Additional parameters are available in order to get better control over the triggering of the probes:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">readinessProbe</span>:
+  <span style="color:#66d9ef">httpGet</span>:
+    <span style="color:#66d9ef">path</span>: /monitoring/alive
+    <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">3401</span>
+  <span style="color:#66d9ef">initialDelaySeconds</span>: <span style="color:#ae81ff">5</span>
+  <span style="color:#66d9ef">timeoutSeconds</span>: <span style="color:#ae81ff">1</span>
+  <span style="color:#66d9ef">periodSeconds</span>: <span style="color:#ae81ff">15</span> 
+  <span style="color:#66d9ef">successThreshold</span>: <span style="color:#ae81ff">1</span> 
+  <span style="color:#66d9ef">failureThreshold</span>: <span style="color:#ae81ff">3</span> 
+</code></pre></div><p><strong>initialDelaySeconds</strong>: How long to wait before starting to probe after a container starts. For liveness probes this should be longer than the time your app usually takes to start up. Otherwise you might get stuck in a reboot loop.</p>
+<p><strong>timeoutSeconds</strong>: How long a probe can take to respond before it’s considered a failure.</p>
+<p><strong>periodSeconds</strong>: How often a probe will be sent. In most cases you can settle for a value between 10 and 20 seconds.</p>
+<p><strong>successThreshold</strong>: How many successes are needed before the probe is considered a success again</p>
+<p><strong>failureThreshold</strong>: How many failures are needed before the probe is considered failed</p>
+<h2 id="create-a-probe">Create a Probe</h2>
+<p>In this Lab we will create a websphere open-liberty deployment.
+Openliberty takes some time to initialize, which will allow us to trigger the probes.</p>
+<p>We will be using the root URL (/) to check for the probes, which is a quick and dirty solution.</p>
+<p>In more advanced scenarios you should code two separate and specific URLs (for example /ready and /health)
+that check for more elaboreate scenarios, like:</p>
+<ul>
+<li>Is the webserver up and running</li>
+<li>Is the backend (e.g. database reachable)</li>
+<li>&hellip;</li>
+</ul>
+<p>The example is the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">apiVersion</span>: apps/v1
+<span style="color:#66d9ef">kind</span>: Deployment
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: open-liberty
+  <span style="color:#66d9ef">namespace</span>: default
+...
+<span style="color:#66d9ef">spec</span>:
+...
+  <span style="color:#66d9ef">template</span>:
+...  
+    <span style="color:#66d9ef">spec</span>:
+      <span style="color:#66d9ef">containers</span>:
+      - <span style="color:#66d9ef">name</span>: open-liberty
+        <span style="color:#66d9ef">image</span>: open-liberty:full
+        <span style="color:#66d9ef">imagePullPolicy</span>: IfNotPresent 
+        <span style="color:#66d9ef">livenessProbe</span>:
+          <span style="color:#66d9ef">httpGet</span>:
+            <span style="color:#66d9ef">path</span>: /
+            <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">9080</span>
+          <span style="color:#66d9ef">initialDelaySeconds</span>: <span style="color:#ae81ff">5</span>
+          <span style="color:#66d9ef">periodSeconds</span>: <span style="color:#ae81ff">1</span>
+          <span style="color:#66d9ef">successThreshold</span>: <span style="color:#ae81ff">1</span> 
+          <span style="color:#66d9ef">failureThreshold</span>: <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">readinessProbe</span>:
+          <span style="color:#66d9ef">httpGet</span>:
+            <span style="color:#66d9ef">path</span>: /
+            <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">9080</span>
+          <span style="color:#66d9ef">initialDelaySeconds</span>: <span style="color:#ae81ff">0</span>
+          <span style="color:#66d9ef">periodSeconds</span>: <span style="color:#ae81ff">1</span>
+          <span style="color:#66d9ef">successThreshold</span>: <span style="color:#ae81ff">1</span> 
+          <span style="color:#66d9ef">failureThreshold</span>: <span style="color:#ae81ff">1</span>
+...
+</code></pre></div><p>As you can see, we will set the initialDelaySeconds way to low and just give it the possibility to fail once (failureThreshold=1) before triggering a failure.</p>
+<p>So we will have the readiness probe triggering almost immediately and the liveness probe 5 seconds later (initialDelaySeconds: 5).</p>
+<ol>
+<li>
+<p>Now let&rsquo;s create the deployment</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f ./training/probes/open-liberty-fail.yaml
+</code></pre></div><p>``</p>
+</li>
+</ol>
+<h3 id="examine-what-happened">Examine what happened</h3>
+<p>Let&rsquo;s examine what happened.</p>
+<ol>
+<li>
+<p>Run <code>k9s</code>, select the open-liberty Pod and hit <code>d</code> for Describe</p>
+<p><img src="./images/probe1.png" alt=""></p>
+</li>
+<li>
+<p>You can see that both probes (readiness and liveness) have been triggered.</p>
+<p>The readiness probe checks immediately and allows for only one error before triggering.
+The liveness probe checks after 5 seconds and allows for only one error before triggering.</p>
+<p><img src="./images/probe4.png" alt=""></p>
+</li>
+<li>
+<p>Run <code>k9s</code>
+After a while you will see the number of restarts going up and the dreaded <code>CrashLoopBackOff</code> Status</p>
+<p><img src="./images/probe3.png" alt=""></p>
+</li>
+</ol>
+<h2 id="adapt-probe-values">Adapt Probe values</h2>
+<p>Let&rsquo;s try to find some more realistic values:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">apiVersion</span>: apps/v1
+<span style="color:#66d9ef">kind</span>: Deployment
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: open-liberty
+  <span style="color:#66d9ef">namespace</span>: default
+...
+<span style="color:#66d9ef">spec</span>:
+...
+  <span style="color:#66d9ef">template</span>:
+...  
+    <span style="color:#66d9ef">spec</span>:
+      <span style="color:#66d9ef">containers</span>:
+      - <span style="color:#66d9ef">name</span>: open-liberty
+        <span style="color:#66d9ef">image</span>: open-liberty:full
+        <span style="color:#66d9ef">imagePullPolicy</span>: IfNotPresent 
+        <span style="color:#66d9ef">readinessProbe</span>:
+          <span style="color:#66d9ef">httpGet</span>:
+            <span style="color:#66d9ef">path</span>: /
+            <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">9080</span>
+          <span style="color:#66d9ef">initialDelaySeconds</span>: <span style="color:#ae81ff">30</span>
+          <span style="color:#66d9ef">periodSeconds</span>: <span style="color:#ae81ff">10</span>
+          <span style="color:#66d9ef">timeoutSeconds</span>: <span style="color:#ae81ff">3</span>
+          <span style="color:#66d9ef">failureThreshold</span>: <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">livenessProbe</span>:
+          <span style="color:#66d9ef">httpGet</span>:
+            <span style="color:#66d9ef">path</span>: /
+            <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">9080</span>
+          <span style="color:#66d9ef">initialDelaySeconds</span>: <span style="color:#ae81ff">60</span>
+          <span style="color:#66d9ef">periodSeconds</span>: <span style="color:#ae81ff">10</span>
+          <span style="color:#66d9ef">timeoutSeconds</span>: <span style="color:#ae81ff">3</span>
+          <span style="color:#66d9ef">failureThreshold</span>: <span style="color:#ae81ff">1</span>
+...
+</code></pre></div><p>So with this values for the readiness probe we give the container the time to internally start up the open-liberty server (initialDelaySeconds: 30) - knowing that it takes about 15-20 seconds to initialize - while checking every 10 seconds (periodSeconds: 10).</p>
+<p>As for the liveness probe we give the container plenty time to settle (initialDelaySeconds: 60) while checking every 10 seconds (periodSeconds: 10).</p>
+<ol>
+<li>So let&rsquo;s update the deployment</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f ./training/probes/open-liberty-ok.yaml
+</code></pre></div><h3 id="examine-what-happened-1">Examine what happened</h3>
+<p>Let&rsquo;s examine what happened.</p>
+<ol>
+<li>
+<p>Run <code>k9s</code>, select the new open-liberty Pod and hit <code>d</code> for Describe (the one that says Running)</p>
+<p><img src="./images/probe5.png" alt=""></p>
+</li>
+<li>
+<p>You can see that no probe (readiness and liveness) has been triggered.</p>
+<p><img src="./images/probe7.png" alt=""></p>
+</li>
+<li>
+<p>Hit <code>ESC</code> to go back and you can see that while Kubernetes waits for the new Pod to become available, the old one is kept in place</p>
+<p>Here we have to wait for the 30 seconds (initialDelaySeconds=30) until the Pod becomes ready, even if it would be able to already accept requests.
+So it is very important to finely tune this parameter in order to avoid to much startup-lag.</p>
+<p><img src="./images/probe5.png" alt=""></p>
+</li>
+<li>
+<p>Once the new Pod is ready, the old one is being terminated
+This mechanism ensures, that existing deployments get deleted only when the new one can take over.</p>
+<p><img src="./images/probe6.png" alt=""></p>
+</li>
+</ol>
+<blockquote>
+<h1 id="congratulations-this-concludes-the-lab-on-probes">Congratulations!!! This concludes the Lab on Probes</h1>
+</blockquote>
 
-	
+
+    
 
 
                     
@@ -456,7 +636,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc18/" title="JTC18 Kubernetes Advanced Labs"><i class="fas fa-chevron-left p-1"></i>JTC18 Kubernetes Advanced Labs</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc18/lab2/" title="Lab 2: Init Containers">Lab 2: Init Containers<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc10/lab1/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 1: Get to know ISTIO | My New Hugo Site
         
     </title>
 
@@ -147,12 +146,12 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc10/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc10/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc10/"><h6>JTC10 Istio</h6></a>
         <ul class="list-unstyled ml-2">
-        <li data-nav-id="/jtc10/lab1/" class="nav-item my-1">
+        <li data-nav-id="/jtc10/lab1/" class="nav-item my-1 active">
                 
                  <a href="/jtc10/lab1/" class="nav-link p-0">
                     Lab 1: Get to know ISTIO
@@ -414,40 +413,54 @@
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
 	<nav id="TableOfContents">
   <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
+    <li><a href="#included-components">Included Components</a></li>
   </ul>
 </nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 1: Get to know ISTIO</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
-<ul>
-<li>In this Lab you will learn the basics of Docker:</li>
-</ul>
+<p>Microservices and containers changed application design and deployment patterns, but along with them brought challenges like service discovery, routing, failure handling, and visibility to microservices. &ldquo;Service mesh&rdquo; architecture was born to handle these features. Applications are getting decoupled internally as microservices, and the responsibility of maintaining coupling between these microservices is passed to the service mesh.</p>
+<p><a href="https://istio.io/">Istio</a>, a joint collaboration between IBM, Google and Lyft provides an easy way to create a service mesh that will manage many of these complex tasks automatically, without the need to modify the microservices themselves. Istio does this by:</p>
 <ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
+<li>
+<p>Deploying a <strong>control plane</strong> that manages the overall network infrastructure and enforces the policy and traffic rules defined by the devops team</p>
+</li>
+<li>
+<p>Deploying a <strong>data plane</strong> which includes “sidecars”, secondary containers that sit along side of each instance of a microservice and act as a proxy to intercept all incoming and outgoing network traffic. Sidecars are implemented using Envoy, an open source edge proxy</p>
+</li>
 </ol>
+<p>Once Istio is installed some of the key feature which it makes available include</p>
+<ul>
+<li>
+<p>Traffic management using <strong>Istio Pilot</strong>: In addition to providing content and policy based load balancing and routing, Pilot also maintains a canonical representation of services in the mesh.</p>
+</li>
+<li>
+<p>Access control using <strong>Istio Auth</strong>: Istio Auth secures the service-to-service communication and also provides a key management system to manage keys and certificates.</p>
+</li>
+<li>
+<p>Monitoring, reporting and quota management using <strong>Istio Mixer</strong>: Istio Mixer provides in depth monitoring and logs data collection for microservices, as well as collection of request traces. Precondition checking like whether the service consumer is on whitelist, quota management like rate limits etc. are also configured using Mixer.</p>
+</li>
+</ul>
+<p>In the first part of this journey we show how we can deploy the sample <a href="https://istio.io/docs/samples/bookinfo.html">BookInfo</a> application and inject sidecars to get the Istio features mentioned above, and walk through the key ones. The BookInfo is a simple application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The application does not use a database, and stores everything in local filesystem.</p>
+<p>Also since Istio tightly controls traffic routing to provide above mentioned benefits, it introduces some drawbacks. Outgoing traffic to external services outside the Istio data plane can only be enabled by specialized configuration, based on the protocol used to connect to the external service.</p>
+<p>In the <a href="#part-b-modify-sample-application-to-use-an-external-datasource-deploy-the-application-and-istio-envoys-with-egress-traffic-enabled">second part</a> of the journey we focus on how Istio can be configured to allow applications to connect to external services. For that we modify the sample BookInfo application to use an external database and then use it as a base to show Istio configuration for enabling egress traffic.</p>
+<p><img src="./images/istio-architecture.png" alt="istio-architecture"></p>
+<h2 id="included-components">Included Components</h2>
+<ul>
+<li><a href="https://istio.io/">Istio</a></li>
+<li><a href="https://www.kiali.io/">Kiali</a></li>
+<li><a href="http://docs.grafana.org/guides/getting_started">Grafana</a></li>
+<li><a href="https://www.jaegertracing.io/">Jaeger</a></li>
+<li><a href="https://prometheus.io/">Prometheus</a></li>
+</ul>
+<hr>
 
-	
+
+    
 
 
                     
@@ -456,7 +469,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc10/" title="JTC10 Istio"><i class="fas fa-chevron-left p-1"></i>JTC10 Istio</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc10/lab2/" title="Lab 2: Installing Istio ">Lab 2: Installing Istio <i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 

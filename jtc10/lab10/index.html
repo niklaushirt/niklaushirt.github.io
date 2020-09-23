@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<meta name="generator" content="Hugo 0.74.3" />
 
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="canonical" href="http://example.org/">
+    <link rel="canonical" href="http://example.org/jtc10/lab10/">
 
     <title>
         
-        Lab information | My New Hugo Site
+        Lab 10: Cleanup | My New Hugo Site
         
     </title>
 
@@ -147,7 +146,7 @@
         </li>
         </ul>
     </li>
-    <li data-nav-id="/jtc10/" class="nav-item my-1 haschildren
+    <li data-nav-id="/jtc10/" class="nav-item my-1 parent haschildren
         ">
         
         <a class="nav-link p-0" href="/jtc10/"><h6>JTC10 Istio</h6></a>
@@ -206,7 +205,7 @@
                     Lab 9: Fault Injection
                 </a>
         </li>
-        <li data-nav-id="/jtc10/lab10/" class="nav-item my-1">
+        <li data-nav-id="/jtc10/lab10/" class="nav-item my-1 active">
                 
                  <a href="/jtc10/lab10/" class="nav-link p-0">
                     Lab 10: Cleanup
@@ -412,42 +411,37 @@
 
 </div>
                 <div class="docs-toc large order-lg-2 order-md-0 order-xs-1 col-12 col-lg-2 col-xl-2 position-sticky border-left"><div class="docs-toc">
-	<nav id="TableOfContents">
-  <ul>
-    <li><a href="#lab-sources">Lab sources</a></li>
-    <li><a href="#lab-overview">Lab overview</a></li>
-  </ul>
-</nav>
+	<nav id="TableOfContents"></nav>
 </div>
 </div>
                 <div class="main col-12 order-1 col-md-9 col-lg-10 col-xl-8 py-3">
                 
-	
 
-	<h1>Lab information</h1>
+<h1>Lab 10: Cleanup</h1>
 
-	<h1 id="lab0---lab-information">Lab0 - Lab information</h1>
-<p>Docker is an open platform for developing, shipping, and running applications.</p>
-<p>Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
-<p>In this Lab you will learn the basic operations for building and running Docker containers.</p>
-<h2 id="lab-sources">Lab sources</h2>
-<p>All the source code for the lab is available here:</p>
-<p><a href="https://github.com/niklaushirt/training">https://github.com/niklaushirt/training</a></p>
-<h2 id="lab-overview">Lab overview</h2>
 <ul>
-<li>In this Lab you will learn the basics of Docker:</li>
+<li>
+<p>To delete the BookInfo app and its route-rules: <code> ~/training/istio/samples/bookinfo/platform/kube/cleanup.sh</code></p>
+</li>
+<li>
+<p>To delete Istio from your cluster</p>
+</li>
 </ul>
-<ol>
-<li>Docker basics</li>
-<li>Build a Docker image</li>
-<li>Run a Docker image</li>
-<li>Use the Portainer tool</li>
-<li>Deploy a more complex Docker application</li>
-<li>Push a Docker image into a registry</li>
-<li>Docker internals</li>
-</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">
+kubectl delete -f ~/training/istio/createTraffic.yaml
+kubectl delete -f ~/training/istio/samples/bookinfo/platform/kube/bookinfo.yaml
+kubectl delete -f  ~/training/istio/samples/bookinfo/networking/bookinfo-gateway.yaml
+kubectl delete -f ~/training/istio/samples/bookinfo/networking/destination-rule-reviews.yaml
+kubectl delete -f ~/training/istio/samples/bookinfo/networking/virtual-service-reviews-80-20.yaml
 
-	
+istioctl manifest generate --set profile<span style="color:#f92672">=</span>demo | kubectl delete -f -
+
+kubectl delete ns istio-system
+
+</code></pre></div><p><strong>Congratulations!!! This concludes the Istio Lab</strong></p>
+
+
+    
 
 
                     
@@ -456,7 +450,8 @@
 
     <h4 class="text-white text-center">Read more</h4>
 
-    <div class="d-flex justify-content-center"><a class="p-1 ml-3 d-inline-block text-white text-right" href="/labpreparation/" title="Lab Preparation">Lab Preparation<i class="fas fa-chevron-right p-1"></i></a>
+    <div class="d-flex justify-content-center"><a class="p-1 mr-3 d-inline-block text-white" href="/jtc10/lab9/" title="Lab 9: Fault Injection"><i class="fas fa-chevron-left p-1"></i>Lab 9: Fault Injection</a>
+        <a class="p-1 ml-3 d-inline-block text-white text-right" href="/jtc14/" title="JTC14 Kubernetes Ansible Operators">JTC14 Kubernetes Ansible Operators<i class="fas fa-chevron-right p-1"></i></a>
     </div>
 </div>
 
